@@ -127,6 +127,10 @@ fn (mut p Parser) parse_symbol() &ast.Symbol {
 
 fn (mut p Parser) parse_literal() ast.Expr {
 	mut pos := p.tok.position()
+	typ := p.parse_type()
+	if typ == ast.void_t {
+		return ast.VoidRet{pos}
+	}
 	match p.tok.kind {
 		.char {
 			lit := p.tok.lit
@@ -135,6 +139,7 @@ fn (mut p Parser) parse_literal() ast.Expr {
 			return ast.CharLiteral{
 				lit: lit
 				pos: pos
+				etyp: typ
 			}
 		}
 		.name, .string {
@@ -148,6 +153,7 @@ fn (mut p Parser) parse_literal() ast.Expr {
 				lit: lit
 				is_cstr: is_cstr
 				pos: pos
+				etyp: typ
 			}
 		}
 		.minus, .number {
@@ -160,9 +166,11 @@ fn (mut p Parser) parse_literal() ast.Expr {
 			node := if lit.index_any('.eE') >= 0 && lit[..2].to_lower() !in ['0x', '0o', '0b'] { ast.Expr(ast.FloatLiteral{
 					lit: full_lit
 					pos: pos
+					etyp: typ
 				}) } else { ast.Expr(ast.IntegerLiteral{
 					lit: full_lit
 					pos: pos
+					etyp: typ
 				}) }
 			p.next()
 			return node
@@ -274,21 +282,6 @@ fn (mut p Parser) parse_args(is_def bool) ([]&ast.Symbol, bool) {
 	return args, use_c_varargs
 }
 
-fn (mut p Parser) parse_def_declaration() ast.Stmt {
-	p.check(.key_def)
-	sym := p.parse_symbol()
-	p.open_scope()
-	args, _ := p.parse_args(false)
-	typ := p.parse_type()
-	p.check(.lbrace)
-	p.check(.rbrace)
-	return ast.DefDecl{
-		sym: sym
-		args: args
-		ret_typ: typ
-	}
-}
-
 fn (mut p Parser) parse_decl_declaration() ast.Stmt {
 	p.check(.key_decl)
 	sym := p.parse_symbol()
@@ -301,4 +294,83 @@ fn (mut p Parser) parse_decl_declaration() ast.Stmt {
 		use_c_varargs: use_c_varargs
 		ret_typ: typ
 	}
+}
+
+fn (mut p Parser) parse_def_declaration() ast.Stmt {
+	p.check(.key_def)
+	sym := p.parse_symbol()
+	p.open_scope()
+	args, _ := p.parse_args(false)
+	typ := p.parse_type()
+	p.check(.lbrace)
+	mut stmts := []ast.Stmt{}
+	for p.tok.kind !in [.rbrace, .eof] {
+		stmts = p.parse_stmts()
+	}
+	p.check(.rbrace)
+	return ast.DefDecl{
+		sym: sym
+		args: args
+		stmts: stmts
+		ret_typ: typ
+	}
+}
+
+fn (mut p Parser) parse_stmts() []ast.Stmt {
+	mut stmts := []ast.Stmt{}
+	match p.tok.kind {
+		.name {
+			expr := p.parse_instruction()
+			stmts << ast.ExprStmt{expr, expr.pos}
+		}
+		else {
+			report.error('expecting statement, not $p.tok', p.tok.position()).emit_and_exit()
+		}
+	}
+	return stmts
+}
+
+fn (mut p Parser) parse_instruction() ast.Expr {
+	mut pos := p.tok.position()
+	name := p.tok.lit
+	p.check(.name)
+	mut instr := ast.InstrExpr{
+		name: name
+	}
+	match name {
+		'call' {
+			etyp := p.parse_type()
+			sym := p.parse_symbol()
+			mut args := []ast.CallArg{}
+			p.check(.lparen)
+			for {
+				mut apos := p.tok.position()
+				atyp := p.parse_type()
+				asym := p.parse_symbol()
+				apos = apos.extend(p.tok.position())
+				args << ast.CallArg{
+					typ: atyp
+					sym: asym
+					pos: pos
+				}
+				if !p.accept(.comma) {
+					break
+				}
+			}
+			p.check(.rparen)
+			instr.args << ast.CallExpr{
+				left: sym
+				args: args
+				etyp: etyp
+			}
+		}
+		'ret' {
+			instr.args << p.parse_literal()
+		}
+		else {
+			report.error('unknown instruction: `$name`', pos).emit()
+		}
+	}
+	instr.pos = pos.extend(p.tok.position())
+	return instr
 }
