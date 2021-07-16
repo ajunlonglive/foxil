@@ -2,7 +2,7 @@
 
 ; @.str = const [13 x i8] c"Hello World\0A\00"
 
-decl @puts(i8*) i32
+decl @puts(i8*, ...) i32
 
 def @main(i32 argc, i8** %argv) i32 {
     ; char* i8ptr = &_str[0];

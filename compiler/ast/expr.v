@@ -6,7 +6,7 @@ module ast
 import compiler.token
 
 pub type Expr = ArrayLiteral | BoolLiteral | CharLiteral | EmptyExpr | FloatLiteral |
-	IntegerLiteral | StringLiteral | Symbol | InstrExpr
+	InstrExpr | IntegerLiteral | StringLiteral | Symbol
 
 pub struct EmptyExpr {
 pub:
@@ -56,14 +56,8 @@ pub:
 
 pub struct InstrExpr {
 pub mut:
-    name string
+	name string
+	typ  Type
 pub:
-    pos token.Position
-}
-
-pub fn (e Expr) is_lit() bool {
-	return match e {
-		BoolLiteral, CharLiteral, IntegerLiteral, FloatLiteral, StringLiteral { true }
-		else { false }
-	}
+	pos token.Position
 }
