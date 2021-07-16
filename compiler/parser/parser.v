@@ -99,8 +99,9 @@ fn (mut p Parser) parse_identifier() string {
 }
 
 fn (mut p Parser) parse_symbol() &ast.Symbol {
-	pos := p.tok.position()
+	mut pos := p.tok.position()
 	mut kind := ast.SymbolKind.local
+	prefix := p.tok.kind.str()
 	match p.tok.kind {
 		.at {
 			p.next()
@@ -116,9 +117,11 @@ fn (mut p Parser) parse_symbol() &ast.Symbol {
 		}
 		else {}
 	}
+	pos = pos.extend(p.tok.position())
 	name := p.parse_identifier()
 	return &ast.Symbol{
-		name: name
+		name: '$prefix$name'
+		gname: util.convert_to_valid_c_ident(name)
 		pos: pos
 		kind: kind
 		unresolved: true
@@ -287,21 +290,23 @@ fn (mut p Parser) parse_args(is_def bool) ([]&ast.Symbol, bool) {
 
 fn (mut p Parser) parse_decl_declaration() ast.Stmt {
 	p.check(.key_decl)
-	sym := p.parse_symbol()
+	mut sym := p.parse_symbol()
 	p.open_scope()
 	args, use_c_varargs := p.parse_args(true)
 	typ := p.parse_type()
-	return ast.DeclStmt{
+	node := ast.DeclStmt{
 		sym: sym
 		args: args
 		use_c_varargs: use_c_varargs
 		ret_typ: typ
 	}
+	sym.node = node
+	return node
 }
 
 fn (mut p Parser) parse_def_declaration() ast.Stmt {
 	p.check(.key_def)
-	sym := p.parse_symbol()
+	mut sym := p.parse_symbol()
 	p.open_scope()
 	args, _ := p.parse_args(false)
 	typ := p.parse_type()
@@ -312,12 +317,14 @@ fn (mut p Parser) parse_def_declaration() ast.Stmt {
 	}
 	p.check(.rbrace)
 	p.close_scope()
-	return ast.DefDecl{
+	mut node := ast.DefDecl{
 		sym: sym
 		args: args
 		stmts: stmts
 		ret_typ: typ
 	}
+	sym.node = node
+	return node
 }
 
 fn (mut p Parser) parse_assign() ast.Stmt {
@@ -326,6 +333,7 @@ fn (mut p Parser) parse_assign() ast.Stmt {
 	p.check(.assign)
 	right := p.parse_instruction()
 	pos = pos.extend(p.tok.position())
+	p.scope.add_obj(left)
 	return ast.AssignStmt{
 		left: left
 		right: right
@@ -348,52 +356,4 @@ fn (mut p Parser) parse_stmts() []ast.Stmt {
 		}
 	}
 	return stmts
-}
-
-fn (mut p Parser) parse_instruction() ast.Expr {
-	mut pos := p.tok.position()
-	name := p.tok.lit
-	p.check(.name)
-	mut instr := ast.InstrExpr{
-		name: name
-	}
-	match name {
-		'call' {
-			mut cpos := p.tok.position()
-			etyp := p.parse_type()
-			sym := p.parse_symbol()
-			mut args := []ast.CallArg{}
-			p.check(.lparen)
-			for {
-				mut apos := p.tok.position()
-				atyp := p.parse_type()
-				asym := p.parse_symbol()
-				apos = apos.extend(p.tok.position())
-				args << ast.CallArg{
-					typ: atyp
-					sym: asym
-					pos: pos
-				}
-				if !p.accept(.comma) {
-					break
-				}
-			}
-			cpos = cpos.extend(p.tok.position())
-			p.check(.rparen)
-			instr.args << ast.CallExpr{
-				left: sym
-				args: args
-				etyp: etyp
-				pos: cpos
-			}
-		}
-		'ret' {
-			instr.args << p.parse_literal()
-		}
-		else {
-			report.error('unknown instruction: `$name`', pos).emit()
-		}
-	}
-	instr.pos = pos.extend(p.tok.position())
-	return instr
 }

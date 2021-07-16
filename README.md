@@ -1,6 +1,6 @@
 <div align="center">
 
-# The Foxil intermediate language
+# The Foxil intermediate language 
 
 Easy and safe
 
@@ -30,10 +30,11 @@ converted to Foxil:
 
 decl @puts(i8*) i32
 
-def @main() i32 {
+def @main(i32 argc, i8** %argv) i32 {
     ; char* i8ptr = &_str[0];
     %i8ptr = get_element_ptr [13 x i8], [13 x i8]* @.str, i64 0
     call i32 @puts(i8* %i8ptr)
+    %t = call i32 @puts(i8* %i8ptr)
     ret i32 0
 }
 ```

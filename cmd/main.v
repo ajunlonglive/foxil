@@ -6,6 +6,7 @@ module main
 import os
 import compiler
 import compiler.parser
+import compiler.checker
 
 const (
 	exe  = os.args[0]
@@ -25,15 +26,13 @@ fn main() {
 	// if the user only wants to check the syntax, we do nothing else,
 	// otherwise, we continue
 	if !g_context.only_check_syntax {
-		/*
-		// we load the native types
-		g_context.load_types()
+		// we install native types in the global context
+		g_context.install_native_types()
 		// we run the checker, to check types, symbols, etc.
 		checker.run_checker()
 		if report.errc > 0 {
 			abort_app()
 		}
-		*/
 		// we run the C generator
 		/*
 		gen.run_gen()

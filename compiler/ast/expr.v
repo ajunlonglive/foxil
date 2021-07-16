@@ -71,8 +71,7 @@ pub struct CallExpr {
 pub mut:
 	left Expr
 	args []CallArg
-	etyp Type // `i32` in `call i32 @sum`
-	typ  Type
+	typ  Type // `i32` in `call i32 @sum`
 pub:
 	pos token.Position
 }

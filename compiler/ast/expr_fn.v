@@ -38,7 +38,7 @@ pub fn (e Expr) str() string {
 			return '$e.name'
 		}
 		CallExpr {
-			return '$e.etyp ${e.left}()'
+			return '$e.typ ${e.left}()'
 		}
 		VoidRet {
 			return 'void'
