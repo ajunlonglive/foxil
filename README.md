@@ -10,13 +10,31 @@ Foxil is an intermediate language developed to facilitate the creation of progra
 languages. Foxil uses a syntax inspired by LLVM-IR, and uses the C programming language
 as a backend.
 
-# Example
+## Example
+
+```c
+int puts(char*);
+
+int main() {
+    puts("Hello World!");
+    return 0;
+}
+```
+
+converted to Foxil:
 
 ```llvm
-decl @puts(cchar* s);
+; A simple "Hello World"
 
-def @main() void {
-    call @puts(c"Hello World!");
+@.str = const [13 x i8] c"Hello World\0A\00"
+
+decl i32 @puts(i8*)
+
+def i32 @main() {
+    ; char* i8ptr = &_str[0];
+    %i8ptr = get_element_ptr [13 x i8], [13 x i8]* @.str, i64 0
+    call i32 @puts(i8* %i8ptr)
+    ret i32 0
 }
 ```
 
