@@ -125,7 +125,11 @@ fn (mut s Scanner) ident_name() string {
 	s.pos++
 	for s.pos < s.text.len {
 		c := s.text[s.pos]
-		if !(util.is_name_char(c) || c.is_digit() || c in [`.`, `:`]) {
+		double_colon := (c == `:` && s.look_ahead(1) == `:`)
+		if double_colon {
+			s.pos++
+		}
+		if !((c == `.` || double_colon) || util.is_name_char(c) || c.is_digit()) {
 			break
 		}
 		s.pos++
@@ -620,7 +624,11 @@ fn (mut s Scanner) text_scan() token.Token {
 		c := s.text[s.pos]
 		nextc := s.look_ahead(1)
 		// name or keyword
-		if util.is_name_char(c) {
+		double_colon := (c == `:` && s.look_ahead(1) == `:`)
+		if util.is_name_char(c) || c == `.` || double_colon {
+			if double_colon {
+				s.pos++
+			}
 			name := s.ident_name()
 			next_char := s.look_ahead(1)
 			kind := token.lookup(name)

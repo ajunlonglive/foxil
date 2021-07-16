@@ -238,6 +238,9 @@ fn (mut p Parser) parse_declarations() []ast.Stmt {
 			.key_decl {
 				stmts << p.parse_decl_declaration()
 			}
+			.at {
+				stmts << p.parse_assign()
+			}
 			else {
 				report.error('expecting declaration, not $p.tok', p.tok.position()).emit_and_exit()
 			}
@@ -308,11 +311,25 @@ fn (mut p Parser) parse_def_declaration() ast.Stmt {
 		stmts = p.parse_stmts()
 	}
 	p.check(.rbrace)
+	p.close_scope()
 	return ast.DefDecl{
 		sym: sym
 		args: args
 		stmts: stmts
 		ret_typ: typ
+	}
+}
+
+fn (mut p Parser) parse_assign() ast.Stmt {
+	mut pos := p.tok.position()
+	left := p.parse_symbol()
+	p.check(.assign)
+	right := p.parse_instruction()
+	pos = pos.extend(p.tok.position())
+	return ast.AssignStmt{
+		left: left
+		right: right
+		pos: pos
 	}
 }
 
@@ -322,6 +339,9 @@ fn (mut p Parser) parse_stmts() []ast.Stmt {
 		.name {
 			expr := p.parse_instruction()
 			stmts << ast.ExprStmt{expr, expr.pos}
+		}
+		.mod {
+			stmts << p.parse_assign()
 		}
 		else {
 			report.error('expecting statement, not $p.tok', p.tok.position()).emit_and_exit()
@@ -339,6 +359,7 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 	}
 	match name {
 		'call' {
+			mut cpos := p.tok.position()
 			etyp := p.parse_type()
 			sym := p.parse_symbol()
 			mut args := []ast.CallArg{}
@@ -357,11 +378,13 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 					break
 				}
 			}
+			cpos = cpos.extend(p.tok.position())
 			p.check(.rparen)
 			instr.args << ast.CallExpr{
 				left: sym
 				args: args
 				etyp: etyp
+				pos: cpos
 			}
 		}
 		'ret' {
