@@ -10,6 +10,11 @@ Foxil is an intermediate language developed to facilitate the creation of progra
 languages. Foxil uses a syntax inspired by LLVM-IR, and uses the C programming language
 as a backend.
 
+The idea is to facilitate code generation, allowing you to use a single syntax to
+generate code for several languages. For now Foxil generates C code, but more languages
+will be added very soon, such as C ++, or JavaScript / TypeScript. If you want to add
+your own backend, don't hesitate to do it!
+
 ## Example
 
 ```c
@@ -26,7 +31,7 @@ converted to Foxil:
 ```llvm
 ; A simple "Hello World"
 
-@.str = const [13 x i8] c"Hello World\0A\00"
+@.str = const [13 x i8] "Hello World\0A\00"
 
 decl @puts(i8*) i32
 
@@ -34,7 +39,6 @@ def @main(i32 %argc, i8** %argv) i32 {
     ; char* i8ptr = &_str[0];
     %i8ptr = get_element_ptr [13 x i8], [13 x i8] @.str, i64 0
     call i32 @puts(i8* %i8ptr)
-    %t = call i32 @puts(i8* %i8ptr)
     ret i32 0
 }
 ```
