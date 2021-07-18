@@ -245,6 +245,9 @@ fn (mut p Parser) parse_type() ast.Type {
 		'char' {
 			ast.char_type
 		}
+		'uchar' {
+			ast.uchar_type
+		}
 		'i8' {
 			ast.i8_type
 		}
