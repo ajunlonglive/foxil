@@ -34,6 +34,9 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 				c.stmt(mut dd_stmt)
 			}
 		}
+		ast.AssignStmt {
+			stmt.left.typ = c.expr(&stmt.right)
+		}
 		ast.ExprStmt {
 			c.expr(&stmt.expr)
 		}

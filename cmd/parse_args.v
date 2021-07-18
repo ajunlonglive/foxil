@@ -18,13 +18,13 @@ Options:
     --version, -v                       show the compiler version
 
     --c-compiler, -cc <C-COMPILER>      use <C-COMPILER> to compile            
-    --optimize, -opt                    apply optimizations to the generated binary
+    --optimize, -opt                    apply optimizations
     
     --output, -o <FILENAME>             the output file will be called <FILENAME>
     --link, -l <OBJFILE>                add an <OBJFILE> file to be linked
     
-    --compile-only, -C                  compile only; do not assemble or link
-    --compile-and-assemble, -c          compile and assemble, but do not link
+    --compile-only, -C                  compile only (.c); do not assemble (.o) or link (.exe)
+    --compile-and-assemble, -c          compile (.c) and assemble (.o), but do not link (.exe)
     
     --verbose                           in verbose mode, the compiler displays messages
     --color, --no-color                 use/not use colors for the Foxil error/warning messages
@@ -50,13 +50,6 @@ fn parse_args() {
 			'--version', '-v' {
 				println('foxilc version $compiler.version')
 				exit(0)
-			}
-			// build modes
-			'--binary-mode' {
-				compiler.foxil_warn("`--binary-mode` is the compiler's default build mode")
-			}
-			'--test-mode', '--docs-mode' {
-				compiler.foxil_error('`$arg` is not available now, coming soon :)')
 			}
 			// options
 			'--c-compiler', '-cc' {
@@ -137,7 +130,7 @@ fn parse_args() {
 					if arg.starts_with('-') {
 						compiler.foxil_error('unknown option `$arg`')
 					} else {
-						compiler.foxil_error('unknown argument `$arg`, expecting a glaz source file')
+						compiler.foxil_error('unknown argument `$arg`, expecting a foxil source file')
 					}
 				}
 			}
@@ -153,8 +146,6 @@ fn parse_args() {
 	if g_context.output == '' {
 		g_context.output = 'executable.out'
 	}
-	namedir := g_context.source_files[0].full_path.replace(os.path_separator, '_').all_before_last('.')
-	g_context.cache_dir = os.join_path(compiler.cache_dir, namedir)
 	if !foxil_srcs {
 		compiler.foxil_error('expecting a foxil source file')
 	}

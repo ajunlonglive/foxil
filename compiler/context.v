@@ -8,10 +8,7 @@ import compiler.ast
 import compiler.util
 
 pub const (
-	version       = '0.1.0-alpha'
-	compiler_home = os.dir(os.executable()).all_before('bin')
-	foxil_home    = os.join_path(os.home_dir(), '.foxil_home')
-	cache_dir     = os.join_path(foxil_home, 'cache')
+	version = '0.1.0-alpha'
 )
 
 __global (
@@ -28,24 +25,22 @@ pub enum UseColor {
 // compiler
 pub struct Context {
 pub mut:
-	root   ast.Scope // the global scope
-	output string    // binary name
-	cc     string    // C compiler to use
-	// cache directory used to store the object code files and .c files
-	cache_dir                string
-	optimize                 bool // do we apply optimizations? default: false
-	verbose                  bool // do we inform about everything? default: false
+	root                     ast.Scope // the global scope
+	output                   string    // binary name
+	cc                       string    // C compiler to use
+	optimize                 bool      // do we apply optimizations? default: false
+	verbose                  bool      // do we inform about everything? default: false
 	only_check_syntax        bool
 	treat_warnings_as_errors bool
 	show_no_warnings         bool
 	compile_only             bool
 	compile_and_assemble     bool
 	use_color                UseColor
-	files_to_delete          []string
 	type_symbols             []ast.TypeSymbol
 	type_idxs                map[string]int
 	unresolved_types         []ast.Symbol
 	unresolved_idxs          map[string]int
+	files_to_delete          []string
 	objects                  []string
 	source_files             []ast.SourceFile
 }
@@ -80,14 +75,17 @@ pub fn (c &Context) get_source_file(filename string) ?&ast.SourceFile {
 	return none
 }
 
-// cleanup frees the memory used in the current context
-pub fn (mut c Context) cleanup() {
+pub fn (mut c Context) delete_files() {
 	for f in c.files_to_delete {
-		if c.compile_only && (f.ends_with('.h') || f.ends_with('.c')) {
+		if !os.exists(f) {
 			continue
 		}
 		os.rm(f) or { foxil_error(err.msg) }
 	}
+}
+
+// cleanup frees the memory used in the current context
+pub fn (mut c Context) cleanup() {
 	unsafe {
 		g_context.free()
 	}

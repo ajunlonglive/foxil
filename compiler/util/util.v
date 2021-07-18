@@ -31,9 +31,13 @@ pub fn convert_to_valid_c_ident(str string) string {
 	mut res := ''
 	for c in str {
 		if is_name_char(c) {
-			res += c.str()
+			res += c.ascii_str()
 		} else {
-			res += '__'
+			if c == `.` {
+				res += '__'
+			} else {
+				res += '_'
+			}
 		}
 	}
 	return res

@@ -239,6 +239,9 @@ fn (mut p Parser) parse_type() ast.Type {
 		'void' {
 			ast.void_type
 		}
+		'bool' {
+			ast.bool_type
+		}
 		'i8' {
 			ast.i8_type
 		}
@@ -269,8 +272,8 @@ fn (mut p Parser) parse_type() ast.Type {
 		'f64' {
 			ast.f64_type
 		}
-		'bool' {
-			ast.bool_type
+		'rawptr' {
+			ast.rawptr_type
 		}
 		else {
 			ast.Type(g_context.register_unresolved_type(ast.Symbol{
@@ -374,10 +377,7 @@ fn (mut p Parser) parse_def_declaration() ast.Stmt {
 	args, _ := p.parse_args(false)
 	typ := p.parse_type()
 	p.check(.lbrace)
-	mut stmts := []ast.Stmt{}
-	for p.tok.kind !in [.rbrace, .eof] {
-		stmts = p.parse_stmts()
-	}
+	stmts := p.parse_stmts()
 	p.check(.rbrace)
 	p.close_scope()
 	mut node := ast.DefDecl{
@@ -396,7 +396,7 @@ fn (mut p Parser) parse_assign() ast.Stmt {
 	left := p.parse_symbol()
 	p.check(.assign)
 	right := p.parse_instruction()
-	pos = pos.extend(p.tok.position())
+	pos = pos.extend(p.prev_tok.position())
 	p.scope.add_obj(left)
 	return ast.AssignStmt{
 		left: left
@@ -407,16 +407,18 @@ fn (mut p Parser) parse_assign() ast.Stmt {
 
 fn (mut p Parser) parse_stmts() []ast.Stmt {
 	mut stmts := []ast.Stmt{}
-	match p.tok.kind {
-		.name {
-			expr := p.parse_instruction()
-			stmts << ast.ExprStmt{expr, expr.pos}
-		}
-		.mod {
-			stmts << p.parse_assign()
-		}
-		else {
-			report.error('expecting statement, not $p.tok', p.tok.position()).emit_and_exit()
+	for p.tok.kind !in [.rbrace, .eof] {
+		match p.tok.kind {
+			.name {
+				expr := p.parse_instruction()
+				stmts << ast.ExprStmt{expr, expr.pos}
+			}
+			.mod {
+				stmts << p.parse_assign()
+			}
+			else {
+				report.error('expecting statement, not $p.tok', p.tok.position()).emit_and_exit()
+			}
 		}
 	}
 	return stmts

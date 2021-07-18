@@ -78,8 +78,7 @@ pub:
 
 pub struct CallArg {
 pub mut:
-	sym &Symbol
-	typ Type
+	expr Expr
 pub:
 	pos token.Position
 }

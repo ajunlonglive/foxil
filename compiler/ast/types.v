@@ -100,6 +100,11 @@ pub fn (t Type) is_void() bool {
 }
 
 [inline]
+pub fn (t Type) is_rawptr() bool {
+	return t == ast.rawptr_type
+}
+
+[inline]
 pub fn (typ Type) is_float() bool {
 	return typ.clear_flags() in ast.float_type_idxs
 }
@@ -149,24 +154,28 @@ pub fn (t Type) has_flag(flag TypeFlag) bool {
 }
 
 pub const (
-	void_type_idx = 0
-	i8_type_idx   = 1
-	i16_type_idx  = 2
-	i32_type_idx  = 3
-	i64_type_idx  = 4
-	u8_type_idx   = 5
-	u16_type_idx  = 6
-	u32_type_idx  = 7
-	u64_type_idx  = 8
-	f32_type_idx  = 9
-	f64_type_idx  = 10
-	bool_type_idx = 11
+	void_type_idx   = 0
+	bool_type_idx   = 1
+	char_type_idx   = 2
+	i8_type_idx     = 3
+	i16_type_idx    = 4
+	i32_type_idx    = 5
+	i64_type_idx    = 6
+	u8_type_idx     = 7
+	u16_type_idx    = 8
+	u32_type_idx    = 9
+	u64_type_idx    = 10
+	f32_type_idx    = 11
+	f64_type_idx    = 12
+	rawptr_type_idx = 13
 )
 
 pub const (
 	integer_type_idxs          = [i8_type_idx, i16_type_idx, i32_type_idx, i64_type_idx, u8_type_idx,
-		u16_type_idx, u32_type_idx, u64_type_idx]
-	signed_integer_type_idxs   = [i8_type_idx, i16_type_idx, i32_type_idx, i64_type_idx]
+		u16_type_idx, u32_type_idx, u64_type_idx, char_type_idx]
+	signed_integer_type_idxs   = [i8_type_idx, i16_type_idx, i32_type_idx, i64_type_idx,
+		char_type_idx,
+	]
 	unsigned_integer_type_idxs = [u8_type_idx, u16_type_idx, u32_type_idx, u64_type_idx]
 	float_type_idxs            = [f32_type_idx, f64_type_idx]
 	number_type_idxs           = [i8_type_idx, i16_type_idx, i32_type_idx, i64_type_idx, u8_type_idx,
@@ -174,22 +183,23 @@ pub const (
 )
 
 pub const (
-	void_type = new_type(void_type_idx)
-	i8_type   = new_type(i8_type_idx)
-	i16_type  = new_type(i16_type_idx)
-	i32_type  = new_type(i32_type_idx)
-	i64_type  = new_type(i64_type_idx)
-	u8_type   = new_type(u8_type_idx)
-	u16_type  = new_type(u16_type_idx)
-	u32_type  = new_type(u32_type_idx)
-	u64_type  = new_type(u64_type_idx)
-	f32_type  = new_type(f32_type_idx)
-	f64_type  = new_type(f64_type_idx)
-	bool_type = new_type(bool_type_idx)
+	void_type   = new_type(void_type_idx)
+	bool_type   = new_type(bool_type_idx)
+	char_type   = new_type(char_type_idx)
+	i8_type     = new_type(i8_type_idx)
+	i16_type    = new_type(i16_type_idx)
+	i32_type    = new_type(i32_type_idx)
+	i64_type    = new_type(i64_type_idx)
+	u8_type     = new_type(u8_type_idx)
+	u16_type    = new_type(u16_type_idx)
+	u32_type    = new_type(u32_type_idx)
+	u64_type    = new_type(u64_type_idx)
+	f32_type    = new_type(f32_type_idx)
+	f64_type    = new_type(f64_type_idx)
+	rawptr_type = new_type(rawptr_type_idx)
 )
 
 pub const (
-	native_type_names = ['void', 'i8', 'i16', 'i32', 'i64', 'u8', 'u16', 'u32', 'u64', 'f32', 'f64',
-		'bool',
-	]
+	native_type_names = ['void', 'bool', 'char', 'i8', 'i16', 'i32', 'i64', 'u8', 'u16', 'u32',
+		'u64', 'f32', 'f64', 'rawptr']
 )

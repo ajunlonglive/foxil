@@ -34,7 +34,7 @@ pub:
 
 pub struct AssignStmt {
 pub mut:
-	left  Expr
+	left  Symbol
 	right Expr
 pub:
 	pos token.Position

@@ -7,6 +7,8 @@ import compiler.ast
 
 pub fn (mut c Context) install_native_types() {
 	c.register_type_symbol(name: 'void', gname: 'void', kind: .void)
+	c.register_type_symbol(name: 'bool', gname: 'bool', kind: .bool)
+	c.register_type_symbol(name: 'char', gname: 'char', kind: .char)
 	c.register_type_symbol(name: 'i8', gname: 'i8', kind: .i8)
 	c.register_type_symbol(name: 'i16', gname: 'i16', kind: .i16)
 	c.register_type_symbol(name: 'i32', gname: 'i32', kind: .i32)
@@ -17,7 +19,7 @@ pub fn (mut c Context) install_native_types() {
 	c.register_type_symbol(name: 'u64', gname: 'u64', kind: .u64)
 	c.register_type_symbol(name: 'f32', gname: 'f32', kind: .f32)
 	c.register_type_symbol(name: 'f64', gname: 'f64', kind: .f64)
-	c.register_type_symbol(name: 'bool', gname: 'bool', kind: .bool)
+	c.register_type_symbol(name: 'rawptr', gname: 'rawptr', kind: .rawptr)
 }
 
 [inline]

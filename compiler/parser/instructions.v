@@ -32,12 +32,10 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			if p.tok.kind != .rparen {
 				for {
 					mut apos := p.tok.position()
-					atyp := p.parse_type()
-					asym := p.parse_symbol()
+					expr := p.parse_literal()
 					apos = apos.extend(p.tok.position())
 					args << ast.CallArg{
-						typ: atyp
-						sym: asym
+						expr: expr
 						pos: pos
 					}
 					if !p.accept(.comma) {

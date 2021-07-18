@@ -23,6 +23,8 @@ type TypeInfo = ArrayInfo | StructInfo
 
 pub enum TypeKind {
 	void
+	bool
+	char
 	i8
 	i16
 	i32
@@ -33,7 +35,7 @@ pub enum TypeKind {
 	u64
 	f32
 	f64
-	bool
+	rawptr
 	array
 }
 

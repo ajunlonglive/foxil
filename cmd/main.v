@@ -7,6 +7,7 @@ import os
 import compiler
 import compiler.parser
 import compiler.checker
+import compiler.gen
 
 const (
 	exe  = os.args[0]
@@ -32,12 +33,10 @@ fn main() {
 			abort_app()
 		}
 		// we run the C generator
-		/*
 		gen.run_gen()
 		if report.errc > 0 {
 			abort_app()
 		}
-		*/
 	}
 	// and finally we release the current context
 	g_context.cleanup()
