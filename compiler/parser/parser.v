@@ -100,12 +100,11 @@ fn (mut p Parser) parse_identifier() string {
 
 fn (mut p Parser) parse_symbol() &ast.Symbol {
 	mut pos := p.tok.position()
-	mut kind := ast.SymbolKind.local
+	mut is_local := false
 	prefix := p.tok.kind.str()
 	match p.tok.kind {
 		.at {
 			p.next()
-			ast.SymbolKind.global
 		}
 		.mod {
 			if p.scope.is_root {
@@ -113,7 +112,7 @@ fn (mut p Parser) parse_symbol() &ast.Symbol {
 					pos).emit()
 			}
 			p.next()
-			ast.SymbolKind.local
+			is_local = true
 		}
 		else {
 			report.error('identifiers should start with a prefix (`@` for globals, `%` for locals)',
@@ -126,9 +125,16 @@ fn (mut p Parser) parse_symbol() &ast.Symbol {
 		name: '$prefix$name'
 		gname: util.convert_to_valid_c_ident(name)
 		pos: pos
-		kind: kind
 		unresolved: true
+		is_local: is_local
+		scope: p.scope
 	}
+}
+
+fn (mut p Parser) parse_symbol_with_kind(k ast.SymbolKind) &ast.Symbol {
+	mut sym := p.parse_symbol()
+	sym.kind = k
+	return sym
 }
 
 fn (mut p Parser) parse_literal() ast.Expr {
@@ -145,7 +151,7 @@ fn (mut p Parser) parse_literal() ast.Expr {
 			return ast.CharLiteral{
 				lit: lit
 				pos: pos
-				etyp: typ
+				typ: typ
 			}
 		}
 		.name, .string {
@@ -159,7 +165,7 @@ fn (mut p Parser) parse_literal() ast.Expr {
 				lit: lit
 				is_cstr: is_cstr
 				pos: pos
-				etyp: typ
+				typ: typ
 			}
 		}
 		.minus, .number {
@@ -172,11 +178,11 @@ fn (mut p Parser) parse_literal() ast.Expr {
 			node := if lit.index_any('.eE') >= 0 && lit[..2].to_lower() !in ['0x', '0o', '0b'] { ast.Expr(ast.FloatLiteral{
 					lit: full_lit
 					pos: pos
-					etyp: typ
+					typ: typ
 				}) } else { ast.Expr(ast.IntegerLiteral{
 					lit: full_lit
 					pos: pos
-					etyp: typ
+					typ: typ
 				}) }
 			p.next()
 			return node
@@ -270,7 +276,8 @@ fn (mut p Parser) parse_type() ast.Type {
 			ast.Type(g_context.register_unresolved_type(ast.Symbol{
 				name: name
 				gname: util.convert_to_valid_c_ident(name)
-				pos: pos
+				unresolved: true
+				pos: pos.extend(p.prev_tok.position())
 			})).set_flag(.unresolved)
 		}
 	}
@@ -342,8 +349,9 @@ fn (mut p Parser) parse_args(is_def bool) ([]&ast.Symbol, bool) {
 }
 
 fn (mut p Parser) parse_decl_declaration() ast.Stmt {
+	pos := p.tok.position()
 	p.check(.key_decl)
-	mut sym := p.parse_symbol()
+	mut sym := p.parse_symbol_with_kind(.function)
 	p.open_scope()
 	args, use_c_varargs := p.parse_args(true)
 	typ := p.parse_type()
@@ -352,14 +360,16 @@ fn (mut p Parser) parse_decl_declaration() ast.Stmt {
 		args: args
 		use_c_varargs: use_c_varargs
 		ret_typ: typ
+		pos: pos.extend(p.prev_tok.position())
 	}
 	sym.node = node
+	g_context.root.add(sym.name, sym)
 	return node
 }
 
 fn (mut p Parser) parse_def_declaration() ast.Stmt {
 	p.check(.key_def)
-	mut sym := p.parse_symbol()
+	mut sym := p.parse_symbol_with_kind(.function)
 	p.open_scope()
 	args, _ := p.parse_args(false)
 	typ := p.parse_type()
@@ -377,6 +387,7 @@ fn (mut p Parser) parse_def_declaration() ast.Stmt {
 		ret_typ: typ
 	}
 	sym.node = node
+	g_context.root.add(sym.name, sym)
 	return node
 }
 

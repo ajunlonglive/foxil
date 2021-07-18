@@ -24,38 +24,38 @@ pub:
 
 pub struct BoolLiteral {
 pub:
-	lit  bool
-	etyp Type
-	pos  token.Position
+	lit bool
+	typ Type
+	pos token.Position
 }
 
 pub struct CharLiteral {
 pub:
 	lit     string
 	is_byte bool
-	etyp    Type
+	typ     Type
 	pos     token.Position
 }
 
 pub struct FloatLiteral {
 pub:
-	lit  string
-	etyp Type
-	pos  token.Position
+	lit string
+	typ Type
+	pos token.Position
 }
 
 pub struct IntegerLiteral {
 pub:
-	lit  string
-	etyp Type
-	pos  token.Position
+	lit string
+	typ Type
+	pos token.Position
 }
 
 pub struct StringLiteral {
 pub:
 	lit     string
 	is_cstr bool
-	etyp    Type
+	typ     Type
 	pos     token.Position
 }
 

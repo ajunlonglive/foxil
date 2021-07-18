@@ -7,10 +7,9 @@ import compiler.token
 
 pub enum SymbolKind {
 	native // native types/functions/etc...
-	local
-	global
 	variable
 	constant
+	function
 }
 
 pub struct Symbol {
@@ -20,7 +19,9 @@ pub mut:
 	node       Stmt
 	unresolved bool
 	kind       SymbolKind
+	is_local   bool
 	typ        Type
+	scope      &Scope = 0
 pub:
 	pos token.Position
 }

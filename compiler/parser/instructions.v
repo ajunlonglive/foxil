@@ -61,6 +61,6 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			report.error('unknown instruction: `$name`', pos).emit()
 		}
 	}
-	instr.pos = pos.extend(p.tok.position())
+	instr.pos = pos.extend(p.prev_tok.position())
 	return instr
 }
