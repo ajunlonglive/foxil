@@ -31,14 +31,14 @@ converted to Foxil:
 ```llvm
 ; A simple "Hello World"
 
-@.str = const [13 x i8] "Hello World\0A\00"
+@.str = const [13 x char] "Hello World\0A\00"
 
-decl @puts(i8*) i32
+decl @puts(char*) i32
 
-def @main(i32 %argc, i8** %argv) i32 {
+def @main(i32 %argc, char** %argv) i32 {
     ; char* i8ptr = &_str[0];
-    %i8ptr = get_element_ptr [13 x i8], [13 x i8] @.str, i64 0
-    call i32 @puts(i8* %i8ptr)
+    %charptr = get_element_ptr [13 x char], [13 x char] @.str, i64 0
+    call i32 @puts(char* %charptr)
     ret i32 0
 }
 ```
