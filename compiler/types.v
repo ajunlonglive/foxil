@@ -58,30 +58,12 @@ pub fn (mut c Context) get_type_gname(typ ast.Type) string {
 	return c.get_type_symbol(typ).gname
 }
 
-fn (mut c Context) check_for_already_registered_symbol(typ ast.TypeSymbol, existing_idx int) int {
-	ex_type := c.type_symbols[existing_idx]
-	match ex_type.kind {
-		.placeholder {
-			c.type_symbols[existing_idx] = typ
-			return existing_idx
-		}
-		else {
-			return -1
-		}
-	}
-	return -2
-}
-
 pub fn (mut c Context) register_type_symbol(typ ast.TypeSymbol) int {
-	mut typ_idx := -2
 	mut existing_idx := c.type_idxs[typ.name]
 	if existing_idx > 0 {
-		typ_idx = c.check_for_already_registered_symbol(typ, existing_idx)
-		if typ_idx != -2 {
-			return typ_idx
-		}
+		return existing_idx
 	}
-	typ_idx = c.type_symbols.len
+	typ_idx := c.type_symbols.len
 	c.type_symbols << typ
 	c.type_idxs[typ.name] = typ_idx
 	return typ_idx

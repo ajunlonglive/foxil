@@ -43,6 +43,9 @@ pub fn (e Expr) str() string {
 		VoidRet {
 			return 'void'
 		}
+		TypeNode {
+			return g_context.get_type_name(e.typ)
+		}
 		EmptyExpr {
 			return '<empty-expr>'
 		}

@@ -54,7 +54,7 @@ pub fn (mut s Scope) add_obj(sy &Symbol) {
 	if p := s.lookup_to_the_nearest_scope(sy.name) {
 		mut e := report.error('redefinition of `$sy.name`', sy.pos)
 		mut e2 := e.note_with_pos('previous definition of `$sy.name` here', p.pos)
-		e2.note('if you try to change the value of the variable, use the `store` instruction').emit()
+		e2.note('if you try to change the value of the variable, use the `alloca` instruction').emit()
 	} else {
 		s.add(sy.name, sy)
 	}

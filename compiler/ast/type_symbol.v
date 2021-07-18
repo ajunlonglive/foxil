@@ -22,7 +22,6 @@ pub fn (t &TypeSymbol) str() string {
 type TypeInfo = ArrayInfo | StructInfo
 
 pub enum TypeKind {
-	placeholder
 	void
 	i8
 	i16

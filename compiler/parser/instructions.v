@@ -14,8 +14,17 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 		name: name
 	}
 	match name {
+		'alloca' {
+			instr.args << ast.TypeNode{
+				typ: p.parse_type()
+				pos: pos
+			}
+			// value?
+			if p.accept(.comma) {
+				instr.args << p.parse_literal()
+			}
+		}
 		'call' {
-			mut cpos := p.tok.position()
 			typ := p.parse_type()
 			sym := p.parse_symbol()
 			mut args := []ast.CallArg{}
@@ -36,13 +45,13 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 					}
 				}
 			}
-			cpos = cpos.extend(p.tok.position())
+			pos = pos.extend(p.tok.position())
 			p.check(.rparen)
 			instr.args << ast.CallExpr{
 				left: sym
 				args: args
 				typ: typ
-				pos: cpos
+				pos: pos
 			}
 		}
 		'ret' {
