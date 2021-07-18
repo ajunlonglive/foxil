@@ -20,18 +20,20 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			sym := p.parse_symbol()
 			mut args := []ast.CallArg{}
 			p.check(.lparen)
-			for {
-				mut apos := p.tok.position()
-				atyp := p.parse_type()
-				asym := p.parse_symbol()
-				apos = apos.extend(p.tok.position())
-				args << ast.CallArg{
-					typ: atyp
-					sym: asym
-					pos: pos
-				}
-				if !p.accept(.comma) {
-					break
+			if p.tok.kind != .rparen {
+				for {
+					mut apos := p.tok.position()
+					atyp := p.parse_type()
+					asym := p.parse_symbol()
+					apos = apos.extend(p.tok.position())
+					args << ast.CallArg{
+						typ: atyp
+						sym: asym
+						pos: pos
+					}
+					if !p.accept(.comma) {
+						break
+					}
 				}
 			}
 			cpos = cpos.extend(p.tok.position())

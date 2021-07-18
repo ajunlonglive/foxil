@@ -42,15 +42,22 @@ pub mut:
 	compile_and_assemble     bool
 	use_color                UseColor
 	files_to_delete          []string
+	type_symbols             []ast.TypeSymbol
+	type_idxs                map[string]int
+	unresolved_types         []ast.Symbol
+	unresolved_idxs          map[string]int
 	objects                  []string
 	source_files             []ast.SourceFile
 }
 
 // new_context returns a new Context, with some presets
 pub fn new_context() Context {
-	return Context{
+	mut c := Context{
 		root: ast.new_root_scope()
 	}
+	// we install native types in the global context
+	c.install_native_types()
+	return c
 }
 
 // add_source_file adds a new source file to the current

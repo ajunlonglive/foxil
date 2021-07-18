@@ -115,7 +115,10 @@ fn (mut p Parser) parse_symbol() &ast.Symbol {
 			p.next()
 			ast.SymbolKind.local
 		}
-		else {}
+		else {
+			report.error('identifiers should start with a prefix (`@` for globals, `%` for locals)',
+				pos).emit()
+		}
 	}
 	pos = pos.extend(p.tok.position())
 	name := p.parse_identifier()
@@ -131,7 +134,7 @@ fn (mut p Parser) parse_symbol() &ast.Symbol {
 fn (mut p Parser) parse_literal() ast.Expr {
 	mut pos := p.tok.position()
 	typ := p.parse_type()
-	if typ == ast.void_t {
+	if typ.is_void() {
 		return ast.VoidRet{pos}
 	}
 	match p.tok.kind {
@@ -192,43 +195,93 @@ fn (mut p Parser) parse_type() ast.Type {
 		size := p.tok.lit.int()
 		p.check(.number)
 		if !(p.tok.kind == .name && p.tok.lit == 'x') {
-			report.error('bad syntax, it should be `[<size> x T]`', pos.extend(p.tok.position())).emit()
+			report.error('bad syntax, it should be `[<size> x <Type>]`', p.tok.position()).emit()
 		}
 		p.check(.name)
-		typ := p.parse_type()
+		elem_typ := p.parse_type()
+		pos = pos.extend(p.tok.position())
+		if elem_typ.is_void() {
+			report.error('cannot make arrays of type `void`', pos).emit()
+		} else if size <= 0 {
+			report.error('arrays of size <= 0 are invalid', pos).emit()
+		}
 		p.check(.rbracket)
 		mut nr_muls := 0
 		for p.accept(.mult) {
 			nr_muls++
 		}
-		return ast.Type{
-			nr_muls: nr_muls
-			is_array: true
-			array_info: &ast.ArrayInfo{
-				typ: typ
-				size: size
-			}
+		if nr_muls > 0 {
+			report.error('cannot make pointers to arrays, they are already pointers themselves',
+				pos).emit()
 		}
+		return ast.Type(g_context.find_or_register_array(elem_typ, size))
 	}
-	if p.accept(.at)
-		&& p.tok.lit in ['void', 'bool', 'i8', 'i16', 'i32', 'i64', 'u8', 'u16', 'u32', 'u64', 'f32', 'f64'] {
-		report.error("native types don't require a global scope prefix (`@`)", pos).emit()
+	prefix := p.tok.kind
+	has_prefix := prefix in [.at, .mod]
+	if has_prefix {
+		p.next()
 	}
-	name := p.tok.lit
-	p.check(.name)
-	sym := ast.Symbol{
-		name: name
-		gname: util.convert_to_valid_c_ident(name)
-		pos: pos
+	name_pos := p.tok.position()
+	name := p.parse_identifier()
+	is_native := name in ast.native_type_names
+	if has_prefix && is_native {
+		report.error("native types don't require a global scope prefix (`@`)", pos.extend(name_pos)).emit()
+	} else if !has_prefix && !is_native {
+		report.error('non-native types require the global scope prefix (`@`)', name_pos).emit()
+	}
+	mut typ := match name {
+		'void' {
+			ast.void_type
+		}
+		'i8' {
+			ast.i8_type
+		}
+		'i16' {
+			ast.i16_type
+		}
+		'i32' {
+			ast.i32_type
+		}
+		'i64' {
+			ast.i64_type
+		}
+		'u8' {
+			ast.u8_type
+		}
+		'u16' {
+			ast.u16_type
+		}
+		'u32' {
+			ast.u32_type
+		}
+		'u64' {
+			ast.u64_type
+		}
+		'f32' {
+			ast.f32_type
+		}
+		'f64' {
+			ast.f64_type
+		}
+		'bool' {
+			ast.bool_type
+		}
+		else {
+			ast.Type(g_context.register_unresolved_type(ast.Symbol{
+				name: name
+				gname: util.convert_to_valid_c_ident(name)
+				pos: pos
+			})).set_flag(.unresolved)
+		}
 	}
 	mut nr_muls := 0
 	for p.accept(.mult) {
 		nr_muls++
 	}
-	return ast.Type{
-		sym: unsafe { &sym }
-		nr_muls: nr_muls
+	if typ.is_void() && nr_muls > 0 {
+		report.error('cannot make pointers to the type `void`', pos).emit()
 	}
+	return typ.set_nr_muls(nr_muls)
 }
 
 fn (mut p Parser) parse_declarations() []ast.Stmt {

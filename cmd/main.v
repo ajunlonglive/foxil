@@ -26,8 +26,6 @@ fn main() {
 	// if the user only wants to check the syntax, we do nothing else,
 	// otherwise, we continue
 	if !g_context.only_check_syntax {
-		// we install native types in the global context
-		g_context.install_native_types()
 		// we run the checker, to check types, symbols, etc.
 		checker.run_checker()
 		if report.errc > 0 {
