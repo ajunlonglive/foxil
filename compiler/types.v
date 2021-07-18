@@ -7,19 +7,19 @@ import compiler.ast
 
 pub fn (mut c Context) install_native_types() {
 	c.register_type_symbol(name: 'void', gname: 'void', kind: .void)
-	c.register_type_symbol(name: 'bool', gname: 'bool', kind: .bool)
+	c.register_type_symbol(name: 'bool', gname: 'uint8_t', kind: .bool)
 	c.register_type_symbol(name: 'char', gname: 'char', kind: .char)
-	c.register_type_symbol(name: 'i8', gname: 'i8', kind: .i8)
-	c.register_type_symbol(name: 'i16', gname: 'i16', kind: .i16)
-	c.register_type_symbol(name: 'i32', gname: 'i32', kind: .i32)
-	c.register_type_symbol(name: 'i64', gname: 'i64', kind: .i64)
-	c.register_type_symbol(name: 'i8', gname: 'i8', kind: .u8)
-	c.register_type_symbol(name: 'u16', gname: 'u16', kind: .u16)
-	c.register_type_symbol(name: 'u32', gname: 'u32', kind: .u32)
-	c.register_type_symbol(name: 'u64', gname: 'u64', kind: .u64)
-	c.register_type_symbol(name: 'f32', gname: 'f32', kind: .f32)
-	c.register_type_symbol(name: 'f64', gname: 'f64', kind: .f64)
-	c.register_type_symbol(name: 'rawptr', gname: 'rawptr', kind: .rawptr)
+	c.register_type_symbol(name: 'i8', gname: 'int8_t', kind: .i8)
+	c.register_type_symbol(name: 'i16', gname: 'int16_t', kind: .i16)
+	c.register_type_symbol(name: 'i32', gname: 'int32_t', kind: .i32)
+	c.register_type_symbol(name: 'i64', gname: 'int64_t', kind: .i64)
+	c.register_type_symbol(name: 'i8', gname: 'int8_t', kind: .u8)
+	c.register_type_symbol(name: 'u16', gname: 'uint16_t', kind: .u16)
+	c.register_type_symbol(name: 'u32', gname: 'uint32_t', kind: .u32)
+	c.register_type_symbol(name: 'u64', gname: 'uint64_t', kind: .u64)
+	c.register_type_symbol(name: 'f32', gname: 'float', kind: .f32)
+	c.register_type_symbol(name: 'f64', gname: 'double', kind: .f64)
+	c.register_type_symbol(name: 'rawptr', gname: 'void*', kind: .rawptr)
 }
 
 [inline]

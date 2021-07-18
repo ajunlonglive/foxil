@@ -242,6 +242,9 @@ fn (mut p Parser) parse_type() ast.Type {
 		'bool' {
 			ast.bool_type
 		}
+		'char' {
+			ast.char_type
+		}
 		'i8' {
 			ast.i8_type
 		}

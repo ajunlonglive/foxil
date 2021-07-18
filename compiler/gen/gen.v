@@ -56,20 +56,6 @@ pub fn run_gen() {
 
 // ============= Foxil RUN-TIME :) ============
 #include <inttypes.h>
-
-typedef int8_t     i8;
-typedef int16_t    i16;
-typedef int        i32;
-typedef int64_t    i64;
-typedef uint8_t    u8;
-typedef uint16_t   u16;
-typedef uint32_t   u32;
-typedef uint64_t   u64;
-typedef float      f32;
-typedef double     f64;
-typedef u8         bool;
-typedef void*      rawptr;
-
 #define true  (1)
 #define false (0)
 // =================== END ====================
@@ -116,8 +102,7 @@ fn (mut g Gen) gen_file(sf &ast.SourceFile) {
 	g.source.writeln(gen.header)
 	g.source.writeln('#include "$gen.fx_runtime_h"\n')
 	g.stmts(sf.nodes)
-	c_file := '${os.file_name(sf.path)}.c'
-	os.write_file(c_file, g.source.str()) or { compiler.foxil_error(err.msg) }
+	os.write_file('${os.file_name(sf.path)}.c', g.source.str()) or { compiler.foxil_error(err.msg) }
 }
 
 fn (mut g Gen) stmts(stmts []ast.Stmt) {
