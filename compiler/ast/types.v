@@ -111,7 +111,7 @@ pub fn (t Type) is_uchar() bool {
 
 [inline]
 pub fn (t Type) is_char_or_uchar() bool {
-	return !t.is_char() || !t.is_uchar()
+	return t.is_char() || t.is_uchar()
 }
 
 [inline]

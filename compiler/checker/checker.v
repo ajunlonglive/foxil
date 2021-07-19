@@ -26,9 +26,15 @@ fn (mut c Checker) check_file(mut sf ast.SourceFile) {
 fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 	match mut stmt {
 		ast.DeclStmt {
+			for mut arg in stmt.args {
+				arg.typ = c.typ(arg.typ)
+			}
 			stmt.ret_typ = c.typ(stmt.ret_typ)
 		}
 		ast.DefDecl {
+			for mut arg in stmt.args {
+				arg.typ = c.typ(arg.typ)
+			}
 			stmt.ret_typ = c.typ(stmt.ret_typ)
 			for mut dd_stmt in stmt.stmts {
 				c.stmt(mut dd_stmt)
@@ -87,8 +93,10 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 				if c.expecting_typ {
 					if expr.name !in g_context.type_idxs {
 						report.error('type `$expr.name` not found', expr.pos).emit()
+					} else {
+						expr.unresolved = true
+						return ast.Type(g_context.type_idxs[expr.name])
 					}
-					return ast.Type(g_context.type_idxs[expr.name])
 				} else {
 					mut nsym := sc.lookup(expr.name) or {
 						report.error('symbol `$expr.name` not found', expr.pos).emit()
@@ -98,6 +106,7 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 						nsym.typ = c.typ(nsym.typ)
 					}
 					expr.typ = nsym.typ
+					expr.unresolved = true
 				}
 			}
 			return expr.typ
