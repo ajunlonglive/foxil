@@ -295,7 +295,8 @@ fn (mut p Parser) parse_type() ast.Type {
 		nr_muls++
 	}
 	if typ.is_void() && nr_muls > 0 {
-		report.error('cannot make pointers to the type `void`', pos).emit()
+		report.error('cannot make pointers to the type `void`, use `rawptr` instead',
+			pos).emit()
 	}
 	return typ.set_nr_muls(nr_muls)
 }
@@ -364,6 +365,7 @@ fn (mut p Parser) parse_decl_declaration() ast.Stmt {
 	p.open_scope()
 	args, use_c_varargs := p.parse_args(true)
 	typ := p.parse_type()
+	sym.typ = typ
 	node := ast.DeclStmt{
 		sym: sym
 		args: args
@@ -386,6 +388,7 @@ fn (mut p Parser) parse_def_declaration() ast.Stmt {
 	stmts := p.parse_stmts()
 	p.check(.rbrace)
 	p.close_scope()
+	sym.typ = typ
 	mut node := ast.DefDecl{
 		sym: sym
 		args: args

@@ -100,18 +100,38 @@ pub fn (t Type) is_void() bool {
 }
 
 [inline]
+pub fn (t Type) is_char() bool {
+	return t == ast.char_type
+}
+
+[inline]
+pub fn (t Type) is_uchar() bool {
+	return t == ast.uchar_type
+}
+
+[inline]
+pub fn (t Type) is_char_or_uchar() bool {
+	return !t.is_char() || !t.is_uchar()
+}
+
+[inline]
+pub fn (t Type) is_bool() bool {
+	return t == ast.bool_type
+}
+
+[inline]
 pub fn (t Type) is_rawptr() bool {
 	return t == ast.rawptr_type
 }
 
 [inline]
 pub fn (typ Type) is_float() bool {
-	return typ.clear_flags() in ast.float_type_idxs
+	return typ.idx() in ast.float_type_idxs
 }
 
 [inline]
 pub fn (typ Type) is_int() bool {
-	return typ.clear_flags() in ast.integer_type_idxs
+	return typ.idx() in ast.integer_type_idxs
 }
 
 [inline]
@@ -126,7 +146,7 @@ pub fn (typ Type) is_unsigned() bool {
 
 [inline]
 pub fn (typ Type) is_number() bool {
-	return typ.clear_flags() in ast.number_type_idxs
+	return typ.idx() in ast.number_type_idxs
 }
 
 // set `flag` on `t` and return `t`

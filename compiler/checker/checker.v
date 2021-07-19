@@ -49,15 +49,30 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 	match mut expr {
 		ast.BoolLiteral {
+			if !expr.typ.is_bool() {
+				report.error('invalid bool literal, expecting `bool <VALUE>`', expr.pos).emit()
+			}
 			return expr.typ
 		}
 		ast.CharLiteral {
+			if expr.typ !in [ast.char_type, ast.uchar_type] {
+				report.error('invalid character literal, expecting `<char|uchar> <VALUE>`',
+					expr.pos).emit()
+			}
 			return expr.typ
 		}
 		ast.IntegerLiteral {
+			if !expr.typ.is_number() {
+				report.error('invalid integer literal, expecting `<(i|u)(8|16|32|64)> <VALUE>`',
+					expr.pos).emit()
+			}
 			return expr.typ
 		}
 		ast.FloatLiteral {
+			if !expr.typ.is_float() {
+				report.error('invalid float literal, expecting `<f(32|64)> <VALUE>`',
+					expr.pos).emit()
+			}
 			return expr.typ
 		}
 		ast.StringLiteral {
@@ -110,7 +125,13 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 
 fn (mut c Checker) call_expr(mut ce ast.CallExpr) ast.Type {
 	typ := c.typ(ce.typ)
-	c.expr(&ce.left)
+	ftyp := c.expr(&ce.left)
+	if typ != ftyp {
+		// TODO: better type2str
+
+		report.error('function `$ce.left` returns `${g_context.get_type_name(ftyp)}`, not `${g_context.get_type_name(typ)}`',
+			ce.pos).emit()
+	}
 	return typ
 }
 
