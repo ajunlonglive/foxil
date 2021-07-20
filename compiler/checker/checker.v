@@ -271,7 +271,9 @@ fn (mut c Checker) are_compatible_types(got ast.Type, expected ast.Type) bool {
 		}
 		return true
 	}
-	if (expected.is_rawptr() || got.is_ptr()) && (expected.is_ptr() || got.is_rawptr()) {
+	if (expected.is_rawptr() && got.is_number())
+		|| (expected.is_rawptr() && got.is_ptr())
+		|| (expected.is_ptr() && got.is_rawptr()) {
 		return true
 	}
 	return false
