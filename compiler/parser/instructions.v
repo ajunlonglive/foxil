@@ -33,10 +33,10 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 				for {
 					mut apos := p.tok.position()
 					expr := p.parse_literal()
-					apos = apos.extend(p.tok.position())
+					apos = apos.extend(p.prev_tok.position())
 					args << ast.CallArg{
 						expr: expr
-						pos: pos
+						pos: apos
 					}
 					if !p.accept(.comma) {
 						break

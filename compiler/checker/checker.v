@@ -41,7 +41,14 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 			}
 		}
 		ast.AssignStmt {
-			stmt.left.typ = c.expr(&stmt.right)
+			t := c.expr(&stmt.right)
+			stmt.left.typ = t
+			mut nsym := stmt.left.scope.lookup(stmt.left.name) or {
+				// we update the type of the object in the scope
+				// this must never fail
+				&ast.Symbol{}
+			}
+			nsym.typ = t
 		}
 		ast.ExprStmt {
 			c.expr(&stmt.expr)
@@ -94,7 +101,7 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 					if expr.name !in g_context.type_idxs {
 						report.error('type `$expr.name` not found', expr.pos).emit()
 					} else {
-						expr.unresolved = true
+						expr.unresolved = false
 						return ast.Type(g_context.type_idxs[expr.name])
 					}
 				} else {
@@ -105,8 +112,17 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 					if nsym.typ.has_flag(.unresolved) {
 						nsym.typ = c.typ(nsym.typ)
 					}
+					if expr.from_lit && c.typ(expr.typ) != nsym.typ {
+						report.error('symbol `$expr.name` is of type `${ast.typ2str(nsym.typ)}`, not of type `${ast.typ2str(expr.typ)}`',
+							expr.pos).emit()
+					}
+					// update expr with nsym :)
+					expr.is_local = nsym.is_local
+					expr.node = nsym.node
+					expr.kind = nsym.kind
 					expr.typ = nsym.typ
-					expr.unresolved = true
+					expr.unresolved = false
+					return nsym.typ
 				}
 			}
 			return expr.typ
@@ -136,10 +152,37 @@ fn (mut c Checker) call_expr(mut ce ast.CallExpr) ast.Type {
 	typ := c.typ(ce.typ)
 	ftyp := c.expr(&ce.left)
 	if typ != ftyp {
-		// TODO: better type2str
-
-		report.error('function `$ce.left` returns `${g_context.get_type_name(ftyp)}`, not `${g_context.get_type_name(typ)}`',
+		report.error('function `$ce.left` returns `${ast.typ2str(ftyp)}`, not `${ast.typ2str(typ)}`',
 			ce.pos).emit()
+	} else if ce.left is ast.Symbol {
+		ce_fn := ce.left as ast.Symbol
+		if ce_fn.kind != .function {
+			report.error('symbol `$ce_fn` is not a function, is a $ce_fn.kind', ce.pos).emit()
+		} else {
+			mut fn_node := ce_fn.node as ast.DefDecl
+			args_count := ce.args.len
+			fn_args_count := fn_node.args.len
+			msg := '$fn_args_count argument(s) are expected, not $args_count'
+			if args_count < fn_args_count {
+				report.error('too few arguments to function ‘$ce_fn’, ($msg)', ce.pos).emit()
+			} else if args_count > fn_args_count {
+				report.error('too many arguments to function ‘$ce_fn’ ($msg)', ce.pos).emit()
+			} else {
+				// TODO: allow variadic arguments
+				for i, mut arg in ce.args {
+					arg_typ := c.expr(&arg.expr)
+					if i < fn_args_count {
+						name := fn_node.args[i].name
+						fn_arg_typ := c.typ(fn_node.args[i].typ)
+						fn_node.args[i].typ = fn_arg_typ
+						c.check_types(arg_typ, fn_arg_typ) or {
+							report.error('$err.msg, in argument `$name` of function `$ce_fn.name`',
+								arg.pos).emit()
+						}
+					}
+				}
+			}
+		}
 	}
 	return typ
 }
@@ -149,7 +192,12 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		'alloca' {
 			instr.typ = c.typ(&(instr.args[0] as ast.TypeNode).typ)
 			if instr.args.len > 1 {
-				instr.typ = c.expr(&instr.args[1])
+				expr_t := c.expr(&instr.args[1])
+				c.check_types(expr_t, instr.typ) or {
+					report.error('$err.msg, in initial value of `alloca` instruction',
+						instr.args[1].pos).emit()
+				}
+				instr.typ = expr_t
 			}
 			return instr.typ
 		}
@@ -176,4 +224,23 @@ fn (mut c Checker) typ(typ ast.Type) ast.Type {
 	t := c.expr(g_context.unresolved_types[typ.idx()]).derive(typ).clear_flag(.unresolved)
 	c.expecting_typ = false
 	return t
+}
+
+fn (mut c Checker) check_types(got ast.Type, expected ast.Type) ? {
+	if !c.are_compatible_types(got, expected) {
+		return error('expecting ${ast.typ2str(expected)}, not ${ast.typ2str(got)}')
+	}
+}
+
+fn (mut c Checker) are_compatible_types(got ast.Type, expected ast.Type) bool {
+	if expected.idx() == got.idx() {
+		if (expected.is_ptr() && got.is_ptr()) && (expected.nr_muls() != got.nr_muls()) {
+			return false
+		}
+		return true
+	}
+	if (expected.is_rawptr() || got.is_ptr()) && (expected.is_ptr() || got.is_rawptr()) {
+		return true
+	}
+	return false
 }

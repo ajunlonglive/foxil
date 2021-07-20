@@ -173,6 +173,12 @@ pub fn (t Type) has_flag(flag TypeFlag) bool {
 	return int(t) & (1 << (int(flag) + 24)) > 0
 }
 
+pub fn typ2str(t Type) string {
+	name := g_context.get_type_name(t)
+	ptr := if t.is_ptr() { '*'.repeat(t.nr_muls()) } else { '' }
+	return '$name$ptr'
+}
+
 pub const (
 	void_type_idx   = 0
 	bool_type_idx   = 1

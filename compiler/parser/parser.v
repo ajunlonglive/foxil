@@ -144,6 +144,15 @@ fn (mut p Parser) parse_literal() ast.Expr {
 		return ast.VoidRet{pos}
 	}
 	match p.tok.kind {
+		.key_true, .key_false {
+			lit := p.tok.lit
+			p.check(p.tok.kind)
+			return ast.BoolLiteral{
+				lit: lit == 'true'
+				pos: pos
+				typ: typ
+			}
+		}
 		.char {
 			lit := p.tok.lit
 			p.check(.char)
@@ -188,7 +197,10 @@ fn (mut p Parser) parse_literal() ast.Expr {
 			return node
 		}
 		.at, .mod {
-			return ast.Expr(p.parse_symbol())
+			mut sym := p.parse_symbol()
+			sym.typ = typ
+			sym.from_lit = true
+			return ast.Expr(sym)
 		}
 		else {}
 	}
@@ -312,7 +324,7 @@ fn (mut p Parser) parse_declarations() []ast.Stmt {
 				stmts << p.parse_decl_declaration()
 			}
 			.at {
-				stmts << p.parse_assign()
+				stmts << p.parse_assign() // TODO: p.parse_global_assign()
 			}
 			else {
 				report.error('expecting declaration, not $p.tok', p.tok.position()).emit_and_exit()

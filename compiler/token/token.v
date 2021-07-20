@@ -45,6 +45,8 @@ pub enum Kind {
 	key_def // def
 	key_pub // pub
 	key_type // type
+	key_true // true
+	key_false // false
 	keyword_end
 }
 
@@ -88,6 +90,8 @@ const tokens = map{
 	Kind.key_def:   'def'
 	Kind.key_pub:   'pub'
 	Kind.key_type:  'type'
+	Kind.key_true:  'true'
+	Kind.key_false: 'false'
 }
 
 fn make_keys() map[string]Kind {

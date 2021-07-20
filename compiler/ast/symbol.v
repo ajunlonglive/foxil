@@ -20,6 +20,7 @@ pub mut:
 	unresolved bool
 	kind       SymbolKind
 	is_local   bool
+	from_lit   bool
 	typ        Type
 	scope      &Scope = 0
 pub:
