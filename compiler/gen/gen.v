@@ -123,16 +123,23 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 			if !stmt.is_extern {
 				g.write(header_fn)
 			}
-			for i, arg in stmt.args {
-				arg_ := '${g.typ(arg.typ)} $arg.gname'
-				g.fns.write_string(arg_)
+			if stmt.args.len == 0 {
+				g.fns.write_string('void')
 				if !stmt.is_extern {
-					g.write(arg_)
+					g.write('void')
 				}
-				if i != stmt.args.len - 1 {
-					g.fns.write_string(', ')
+			} else {
+				for i, arg in stmt.args {
+					arg_ := '${g.typ(arg.typ)} $arg.gname'
+					g.fns.write_string(arg_)
 					if !stmt.is_extern {
-						g.write(', ')
+						g.write(arg_)
+					}
+					if i != stmt.args.len - 1 {
+						g.fns.write_string(', ')
+						if !stmt.is_extern {
+							g.write(', ')
+						}
 					}
 				}
 			}
