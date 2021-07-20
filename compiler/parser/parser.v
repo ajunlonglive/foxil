@@ -371,7 +371,7 @@ fn (mut p Parser) parse_args(is_def bool) ([]&ast.Symbol, bool) {
 }
 
 fn (mut p Parser) parse_func_declaration() ast.Stmt {
-	pos := p.tok.position()
+	mut pos := p.tok.position()
 	mut is_extern := p.tok.kind == .key_extern
 	if is_extern {
 		p.next()
@@ -381,6 +381,7 @@ fn (mut p Parser) parse_func_declaration() ast.Stmt {
 	p.open_scope()
 	args, use_c_varargs := p.parse_args(is_extern)
 	typ := p.parse_type()
+	pos = pos.extend(p.tok.position())
 	mut stmts := []ast.Stmt{}
 	if p.tok.kind == .lbrace {
 		if is_extern {
@@ -400,7 +401,7 @@ fn (mut p Parser) parse_func_declaration() ast.Stmt {
 		use_c_varargs: use_c_varargs
 		ret_typ: typ
 		is_extern: is_extern
-		pos: pos.extend(p.prev_tok.position())
+		pos: pos
 	}
 	sym.node = node
 	g_context.root.add(sym.name, sym)

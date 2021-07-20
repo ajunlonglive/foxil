@@ -117,9 +117,6 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 			if stmt.is_extern {
 				g.fns.write_string('extern ')
 			}
-			if stmt.stmts.len > 0 && stmt.stmts.len < 3 && !stmt.is_extern {
-				g.write('inline ')
-			}
 			header_fn := '${g.typ(stmt.ret_typ)} ${stmt.sym.gname}('
 			g.fns.write_string(header_fn)
 			if !stmt.is_extern {

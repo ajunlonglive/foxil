@@ -30,8 +30,19 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 				arg.typ = c.typ(arg.typ)
 			}
 			stmt.ret_typ = c.typ(stmt.ret_typ)
-			for mut dd_stmt in stmt.stmts {
+			mut has_return := false
+			for i, mut dd_stmt in stmt.stmts {
+				if !stmt.ret_typ.is_void() && !stmt.is_extern && i == stmt.stmts.len - 1
+					&& mut dd_stmt is ast.ExprStmt {
+					if dd_stmt.expr is ast.InstrExpr
+						&& (dd_stmt.expr as ast.InstrExpr).name == 'ret' {
+						has_return = true
+					}
+				}
 				c.stmt(mut dd_stmt)
+			}
+			if !stmt.is_extern && !stmt.ret_typ.is_void() && !has_return {
+				report.error('current function does not return a value', stmt.pos).emit()
 			}
 		}
 		ast.AssignStmt {
