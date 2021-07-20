@@ -473,8 +473,6 @@ fn (s &Scanner) count_symbol_before(p int, sym byte) int {
 }
 
 fn (mut s Scanner) ident_string() string {
-	is_raw := s.pos > 0 && s.text[s.pos - 1] == `r`
-	is_cstr := s.pos > 0 && s.text[s.pos - 1] == `c`
 	mut n_cr_chars := 0
 	mut start := s.pos
 	start_char := s.text[start]
@@ -508,18 +506,18 @@ fn (mut s Scanner) ident_string() string {
 		if c == `0` && s.pos > 2 && prevc == slash {
 			if (s.pos < s.text.len - 1 && s.text[s.pos + 1].is_digit())
 				|| s.count_symbol_before(s.pos - 1, slash) % 2 == 0 {
-			} else if !is_cstr && !is_raw {
+			} else {
 				s.error(r'cannot use `\0` (NULL character) in the string literal').emit()
 			}
 		}
 		if c == `0` && s.pos > 5 && s.expect('\\x0', s.pos - 3) {
 			if s.count_symbol_before(s.pos - 3, slash) % 2 == 0 {
-			} else if !is_cstr && !is_raw {
+			} else {
 				s.error(r'cannot use `\x00` (NULL character) in the string literal').emit()
 			}
 		}
 		// escape '\x', '\u'
-		if prevc == slash && !is_raw && s.count_symbol_before(s.pos - 2, slash) % 2 == 0 {
+		if prevc == slash && s.count_symbol_before(s.pos - 2, slash) % 2 == 0 {
 			// escape '\x'
 			if c == `x`
 				&& (s.text[s.pos + 1] == parser.double_quote || !s.text[s.pos + 1].is_hex_digit()) {

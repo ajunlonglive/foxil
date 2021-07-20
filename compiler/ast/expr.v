@@ -52,11 +52,10 @@ pub:
 }
 
 pub struct StringLiteral {
-pub:
-	lit     string
-	is_cstr bool
-	typ     Type
-	pos     token.Position
+pub mut:
+	lit string
+	typ Type
+	pos token.Position
 }
 
 pub struct InstrExpr {

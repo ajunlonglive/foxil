@@ -80,7 +80,7 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 			return expr.typ
 		}
 		ast.CharLiteral {
-			if expr.typ !in [ast.char_type, ast.uchar_type] {
+			if !expr.typ.is_char() {
 				report.error('invalid character literal, expecting `<char|uchar> <VALUE>`',
 					expr.pos).emit()
 			}
@@ -101,6 +101,14 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 			return expr.typ
 		}
 		ast.StringLiteral {
+			ts := g_context.get_type_symbol(expr.typ)
+			if ts.kind != .array {
+				report.error('invalid string literal, expecting `[<LEN-VALUE> x char] <VALUE>`',
+					expr.pos).emit()
+			} else if (ts.info as ast.ArrayInfo).size != expr.lit.len {
+				report.error('invalid string literal, string literal is size $expr.lit.len, not ${(ts.info as ast.ArrayInfo).size}',
+					expr.pos).emit()
+			}
 			return expr.typ
 		}
 		ast.ArrayLiteral {
@@ -116,7 +124,7 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 				}
 			}
 			t := ast.Type(g_context.find_or_register_array(elem_t, expr.size))
-			expr.typ = t
+			expr.typ = elem_t
 			return t
 		}
 		ast.VoidRet {
@@ -200,7 +208,10 @@ fn (mut c Checker) call_expr(mut ce ast.CallExpr) ast.Type {
 						fn_arg_typ := c.typ(fn_node.args[i].typ)
 						fn_node.args[i].typ = fn_arg_typ
 						c.check_types(arg_typ, fn_arg_typ) or {
-							report.error('$err.msg, in argument `$name` of function `$ce_fn.name`',
+							n := if fn_node.is_extern { i.str() } else { '`$name`' }
+							k := if fn_node.is_extern { 'extern ' } else { '' }
+
+							report.error('$err.msg, in argument $n of ${k}function `$ce_fn.name`',
 								arg.pos).emit()
 						}
 					}
@@ -227,14 +238,21 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		'cast' {
 			from_t := c.expr(&instr.args[0])
 			to_t := c.typ((instr.args[1] as ast.TypeNode).typ)
+			gts := g_context.get_type_symbol(from_t)
 			if (from_t.is_number() && to_t.is_number())
 				|| (from_t.is_bool() && to_t.is_number())
-				|| (from_t.is_char_or_uchar() && to_t.is_number())
-				|| (from_t.is_number() && to_t.is_char_or_uchar())
+				|| (from_t.is_char() && to_t.is_number())
+				|| (from_t.is_number() && to_t.is_char())
 				|| (from_t.is_rawptr() && to_t.is_ptr())
 				|| (from_t.is_ptr() && to_t.is_rawptr()) {
 				instr.typ = to_t
 				return to_t
+			} else if to_t.idx() == ast.char_type && to_t.is_ptr() && gts.info is ast.ArrayInfo {
+				// allow cast from `char[]` to `char*`
+				if gts.info.elem_type.is_char() {
+					instr.typ = to_t
+					return to_t
+				}
 			} else {
 				report.error('cannot cast `${ast.typ2str(from_t)}` to `${ast.typ2str(to_t)}`',
 					instr.pos).emit()

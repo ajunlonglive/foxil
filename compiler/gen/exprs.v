@@ -20,13 +20,13 @@ fn (mut g Gen) expr(expr ast.Expr) {
 			g.write(expr.lit.str())
 		}
 		ast.StringLiteral {
-			g.write('/* TODO */')
+			g.write('"$expr.lit"')
 		}
 		ast.Symbol {
 			g.write(expr.gname)
 		}
 		ast.ArrayLiteral {
-			g.write('((${g.typ(expr.typ)}){')
+			g.write('((${g.typ(expr.typ)}[]){')
 			for i, elem in expr.elems {
 				g.expr(elem)
 				if i != expr.elems.len - 1 {
@@ -93,8 +93,8 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 		ast.bool_type {
 			g.write('false')
 		}
-		ast.char_type, ast.uchar_type {
-			g.write(r"'\0'")
+		ast.char_type {
+			g.write(r"'\\0'")
 		}
 		ast.i8_type, ast.i16_type, ast.i32_type, ast.i64_type, ast.u8_type, ast.u16_type,
 		ast.u32_type, ast.u64_type {

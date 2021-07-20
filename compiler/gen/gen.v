@@ -174,7 +174,7 @@ fn (mut g Gen) typ(typ ast.Type) string {
 	if ts.info is ast.ArrayInfo {
 		t_idx := typ.idx()
 		if t_idx !in g.arrays {
-			g.typedefs.writeln('typedef ${g.typ(ts.info.elem_type)} *$ts.gname;')
+			g.typedefs.writeln('typedef ${g.typ(ts.info.elem_type)}* $ts.gname;')
 			g.arrays << t_idx
 		}
 	}

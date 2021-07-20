@@ -164,17 +164,12 @@ fn (mut p Parser) parse_literal() ast.Expr {
 				typ: typ
 			}
 		}
-		.name, .string {
-			is_cstr := p.tok.kind == .name && p.tok.lit == 'c'
-			if is_cstr {
-				p.check(.name)
-			}
+		.string {
 			lit := p.tok.lit
 			pos = pos.extend(p.tok.position())
 			p.check(.string)
 			return ast.StringLiteral{
 				lit: lit
-				is_cstr: is_cstr
 				pos: pos
 				typ: typ
 			}
@@ -280,9 +275,6 @@ fn (mut p Parser) parse_type() ast.Type {
 		}
 		'char' {
 			ast.char_type
-		}
-		'uchar' {
-			ast.uchar_type
 		}
 		'i8' {
 			ast.i8_type

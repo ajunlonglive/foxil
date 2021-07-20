@@ -1,11 +1,10 @@
 ; A simple "Hello World"
 
-@.str = const [13 x char] "Hello World\0A\00"
-
 extern func @puts(char*) i32
 
 func @main(i32 %argc, char** %argv) i32 {
-    %charptr = get_element_ptr [13 x char], [13 x char] @.str, i64 0
-    call i32 @puts(char* %charptr)
+    %str = alloca [12 x char], [12 x char] "Hello World!"
+    %cstr = cast [12 x char] %str as char*
+    call i32 @puts(char* %cstr)
     ret i32 0
 }

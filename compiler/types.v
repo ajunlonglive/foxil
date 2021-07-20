@@ -9,7 +9,6 @@ pub fn (mut c Context) install_native_types() {
 	c.register_type_symbol(name: 'void', gname: 'void', kind: .void)
 	c.register_type_symbol(name: 'bool', gname: 'uint8_t', kind: .bool)
 	c.register_type_symbol(name: 'char', gname: 'char', kind: .char)
-	c.register_type_symbol(name: 'uchar', gname: 'uint32_t', kind: .uchar)
 	c.register_type_symbol(name: 'i8', gname: 'int8_t', kind: .i8)
 	c.register_type_symbol(name: 'i16', gname: 'int16_t', kind: .i16)
 	c.register_type_symbol(name: 'i32', gname: 'int32_t', kind: .i32)
@@ -81,6 +80,14 @@ pub fn (mut c Context) register_unresolved_type(typ ast.Symbol) int {
 	c.unresolved_types << typ
 	c.unresolved_idxs[typ.gname] = typ_idx
 	return typ_idx
+}
+
+pub fn (mut c Context) value_type(typ ast.Type) ast.Type {
+	ts := c.get_type_symbol(typ)
+	if ts.info is ast.ArrayInfo {
+		return ts.info.elem_type
+	}
+	return typ
 }
 
 pub fn (mut c Context) find_or_register_array(elem_type ast.Type, size int) int {
