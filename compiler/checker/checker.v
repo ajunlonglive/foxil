@@ -36,6 +36,9 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 		}
 		ast.AssignStmt {
 			t := c.expr(&stmt.right)
+			if stmt.right is ast.InstrExpr && (stmt.right as ast.InstrExpr).name == 'ret' {
+				report.error('instruction `ret` cannot be used as an expression', stmt.pos).emit()
+			}
 			stmt.left.typ = t
 			mut nsym := stmt.left.scope.lookup(stmt.left.name) or {
 				// we update the type of the object in the scope
