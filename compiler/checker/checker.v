@@ -209,7 +209,6 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 					report.error('$err.msg, in initial value of `alloca` instruction',
 						instr.args[1].pos).emit()
 				}
-				instr.typ = expr_t
 			}
 			return instr.typ
 		}
