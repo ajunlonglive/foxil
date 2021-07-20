@@ -145,18 +145,19 @@ fn (mut p Parser) parse_literal() ast.Expr {
 	}
 	match p.tok.kind {
 		.key_true, .key_false {
-			lit := p.tok.lit
+			kind := p.tok.kind
+            pos = pos.extend(p.tok.position())
 			p.check(p.tok.kind)
 			return ast.BoolLiteral{
-				lit: lit == 'true'
+				lit: kind==.key_true
 				pos: pos
 				typ: typ
 			}
 		}
 		.char {
 			lit := p.tok.lit
+            pos = pos.extend(p.tok.position())
 			p.check(.char)
-			p.next()
 			return ast.CharLiteral{
 				lit: lit
 				pos: pos
@@ -169,6 +170,7 @@ fn (mut p Parser) parse_literal() ast.Expr {
 				p.check(.name)
 			}
 			lit := p.tok.lit
+            pos = pos.extend(p.tok.position())
 			p.check(.string)
 			return ast.StringLiteral{
 				lit: lit
@@ -184,6 +186,7 @@ fn (mut p Parser) parse_literal() ast.Expr {
 			}
 			lit := p.tok.lit
 			full_lit := if is_neg { '-' + lit } else { lit }
+            pos = pos.extend(p.tok.position())
 			node := if lit.index_any('.eE') >= 0 && lit[..2].to_lower() !in ['0x', '0o', '0b'] { ast.Expr(ast.FloatLiteral{
 					lit: full_lit
 					pos: pos
