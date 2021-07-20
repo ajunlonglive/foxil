@@ -33,9 +33,9 @@ converted to Foxil:
 
 @.str = const [13 x char] "Hello World\0A\00"
 
-decl @puts(char*) i32
+extern func @puts(char*) i32
 
-def @main(i32 %argc, char** %argv) i32 {
+func @main(i32 %argc, char** %argv) i32 {
     ; char* i8ptr = &_str[0];
     %charptr = get_element_ptr [13 x char], [13 x char] @.str, i64 0
     call i32 @puts(char* %charptr)
