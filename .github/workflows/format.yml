@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: foxil
+          fetch-depth: 0 
 
       - name: Format source code
         run: |
@@ -44,5 +45,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
-        run: |
-          git pull
