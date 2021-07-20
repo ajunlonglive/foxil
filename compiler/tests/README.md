@@ -21,7 +21,7 @@ are the files with the extension `.out`.
 To create an expected output file, you can use:
 
 ```bash
-foxilc compiler/tests/checks/<test>.foxil 2> compiler/tests/checks/<test>.out
+$ foxilc compiler/tests/checks/<test>.foxil 2> compiler/tests/checks/<test>.out
 ```
 
 Replacing `<test>` with the name of your test.

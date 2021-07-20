@@ -40,4 +40,4 @@ jobs:
       - name: Run checker tests
         run: |
           cd ./foxil
-          make test-checker
+          make test-checks
