@@ -18,7 +18,7 @@ your own backend, don't hesitate to do it!
 ## Example
 
 ```c
-int puts(char*);
+extern int puts(char*);
 
 int main() {
     puts("Hello World!");

@@ -55,9 +55,16 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 		}
 		'cast' {
-			g.write('((${g.typ(instr.typ)})')
-			g.expr(instr.args[0])
-			g.write(')')
+            ts := g_context.get_type_symbol(instr.typ)
+            e := instr.args[0]
+            // arrays are already pointers :)
+            if ts.kind != .array && !instr.typ.is_ptr() {
+                g.write('((${g.typ(instr.typ)})')
+                g.expr(e)
+                g.write(')')
+            } else {
+                g.expr(e)
+            }
 		}
 		'call' {
 			cexpr := instr.args[0] as ast.CallExpr
