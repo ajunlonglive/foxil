@@ -196,3 +196,4 @@ pub fn (mut g Gen) writeln(s string) {
 	g.source.writeln(s)
 	g.empty_line = true
 }
+// delete-me
