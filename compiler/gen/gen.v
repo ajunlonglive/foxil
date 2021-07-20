@@ -144,6 +144,18 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 						}
 					}
 				}
+				if stmt.use_c_varargs {
+					if stmt.args.len > 0 {
+						g.fns.write_string(', ')
+						if !stmt.is_extern {
+							g.write(', ')
+						}
+					}
+					g.fns.write_string('...')
+					if !stmt.is_extern {
+						g.write('...')
+					}
+				}
 			}
 			g.fns.writeln(');')
 			if !stmt.is_extern {
@@ -196,9 +208,3 @@ pub fn (mut g Gen) writeln(s string) {
 	g.source.writeln(s)
 	g.empty_line = true
 }
-// delete-me
-// delete-me
-fn (mut g Gen) fn_test_format_yml() {}
-// delete-me
-// delete-me
-// delete-me

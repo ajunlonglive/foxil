@@ -347,7 +347,7 @@ fn (mut p Parser) parse_declarations() []ast.Stmt {
 	return stmts
 }
 
-fn (mut p Parser) parse_args(is_def bool) ([]&ast.Symbol, bool) {
+fn (mut p Parser) parse_args(is_extern bool) ([]&ast.Symbol, bool) {
 	mut args := []&ast.Symbol{}
 	mut use_c_varargs := false
 	p.check(.lparen)
@@ -355,10 +355,10 @@ fn (mut p Parser) parse_args(is_def bool) ([]&ast.Symbol, bool) {
 		return args, false
 	}
 	for {
-		if p.tok.kind == .ellipsis {
+		if p.tok.lit == '...' {
 			if p.peek_tok.kind != .rparen {
 				report.error('`...` should go to the end of the arguments', p.tok.position()).emit()
-			} else if !is_def {
+			} else if !is_extern {
 				report.error('`...` is only allowed for definitions', p.tok.position()).emit()
 			} else if use_c_varargs {
 				report.error('`...` is duplicated', p.tok.position()).emit()
@@ -368,7 +368,7 @@ fn (mut p Parser) parse_args(is_def bool) ([]&ast.Symbol, bool) {
 			p.next()
 		} else {
 			typ := p.parse_type()
-			mut sym := if is_def { &ast.Symbol{
+			mut sym := if is_extern { &ast.Symbol{
 					gname: ''
 				} } else { p.parse_symbol() }
 			sym.typ = typ
