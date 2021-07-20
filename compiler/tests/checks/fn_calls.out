@@ -1,0 +1,9 @@
+compiler/tests/checks/fn_calls.foxil:12:4: error: too many arguments to function ‘@func.args.0’ (0 argument(s) are expected, not 1)
+    12 |     call void @func.args.0(i32 5)
+       |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+compiler/tests/checks/fn_calls.foxil:13:4: error: too many arguments to function ‘@func.args.2’ (1 argument(s) are expected, not 2)
+    13 |     call void @func.args.2(i32 5, i32 5)
+       |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+compiler/tests/checks/fn_calls.foxil:14:4: error: too few arguments to function ‘@func.args.3’ (3 argument(s) are expected, not 2)
+    14 |     call void @func.args.3(i32 5, i32 5)
+       |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

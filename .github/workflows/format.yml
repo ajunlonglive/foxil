@@ -1,0 +1,44 @@
+name: format
+
+on:
+  push:
+    paths: ['**.v', '**.vsh']
+    branches: [main]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout V
+       uses: actions/checkout@v2
+       with:
+          repository: vlang/v
+
+      - name: Build V
+        run: |
+          make
+          sudo ./v symlink
+
+      - name: Checkout blux source code
+        uses: actions/checkout@v2
+        with:
+          path: foxil
+
+      - name: Format source code
+        run: |
+          make format
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          if [[ ! -z $(git status -s) ]]; then
+            git add cmd/ compiler/
+            git commit -m "all: format source code"
+         fi
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+         branch: ${{ github.ref }}

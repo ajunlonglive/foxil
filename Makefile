@@ -19,8 +19,8 @@ Targets:
 endef
 export help_banner
 
-.PHONY: all format help # test test-compiler test-checker help
-.SILENT: build format help # test test-compiler test-checker help
+.PHONY: all format test test-compiler test-checks help
+.SILENT: build format test test-compiler test-checks help
 
 .DEFAULT_GOAL := all
 
@@ -34,15 +34,15 @@ format: ## Format foxil source code
 	echo "Formatting V files..."
 	$(VFMT) -w $(src_dir) cmd/ compiler/
 
-# test: test-compiler test-checker ## Run all tests
+test: test-compiler test-checks ## Run all tests
 
-# test-compiler: ## Test compiler source code
-#	echo "Running V test files..."
-#	$(VTEST) compiler/tests/
-#
-# test-checker: ## Test the Checker
-#	echo "Running Checker test files..."
-#	$(VRUN) compiler/tests/test_checker.vsh compiler/tests/checker
+test-compiler: ## Test compiler source code
+	echo "Running V test files..."
+	$(VTEST) compiler/tests/
+
+test-checks: ## Test the Checker
+	echo "Running Checker test files..."
+	$(VRUN) compiler/tests/test_checks.vsh compiler/tests/checks
 
 help: ## Show this message
 	printf "$$help_banner"
