@@ -1,4 +1,4 @@
-; A simple "Hello World"
+; A simple "Hello World!"
 
 extern func @puts(char*) i32
 
