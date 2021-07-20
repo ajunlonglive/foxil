@@ -26,10 +26,12 @@ jobs:
 
       - name: Format source code
         run: |
+          cd ./foxil
           make format
 
       - name: Commit changes
         run: |
+          cd ./foxil
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           if [[ ! -z $(git status -s) ]]; then
