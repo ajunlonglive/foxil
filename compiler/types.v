@@ -14,7 +14,7 @@ pub fn (mut c Context) install_native_types() {
 	c.register_type_symbol(name: 'i16', gname: 'int16_t', kind: .i16)
 	c.register_type_symbol(name: 'i32', gname: 'int32_t', kind: .i32)
 	c.register_type_symbol(name: 'i64', gname: 'int64_t', kind: .i64)
-	c.register_type_symbol(name: 'i8', gname: 'int8_t', kind: .u8)
+	c.register_type_symbol(name: 'u8', gname: 'uint8_t', kind: .u8)
 	c.register_type_symbol(name: 'u16', gname: 'uint16_t', kind: .u16)
 	c.register_type_symbol(name: 'u32', gname: 'uint32_t', kind: .u32)
 	c.register_type_symbol(name: 'u64', gname: 'uint64_t', kind: .u64)
