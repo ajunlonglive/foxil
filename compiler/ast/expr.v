@@ -15,7 +15,7 @@ pub:
 
 pub struct ArrayLiteral {
 pub mut:
-	size  Expr
+	size  int
 	elems []Expr
 	typ   Type
 pub:

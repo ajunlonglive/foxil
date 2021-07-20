@@ -41,12 +41,13 @@ pub enum TypeKind {
 }
 
 pub struct ArrayInfo {
-pub:
+pub mut:
 	elem_type Type
-	size      int
+pub:
+	size int
 }
 
 pub struct StructInfo {
-pub:
+pub mut:
 	fields []Type
 }

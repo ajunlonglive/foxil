@@ -34,6 +34,7 @@ mut:
 	opt        string
 	indent     int
 	empty_line bool
+	arrays     []int
 }
 
 pub fn run_gen() {
@@ -69,6 +70,7 @@ pub fn run_gen() {
 		g.header.writeln('// structs')
 		g.header.writeln(g.structs.str())
 	}
+	g.header.writeln('// functions')
 	g.header.writeln(g.fns.str())
 	g.header.writeln('\n#endif // $gen.guard')
 
@@ -168,7 +170,15 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 }
 
 fn (mut g Gen) typ(typ ast.Type) string {
-	return g_context.get_type_gname(typ) + '*'.repeat(typ.nr_muls())
+	ts := g_context.get_type_symbol(typ)
+	if ts.info is ast.ArrayInfo {
+		t_idx := typ.idx()
+		if t_idx !in g.arrays {
+			g.typedefs.writeln('typedef ${g.typ(ts.info.elem_type)} *$ts.gname;')
+			g.arrays << t_idx
+		}
+	}
+	return ts.gname + '*'.repeat(typ.nr_muls())
 }
 
 pub fn (mut g Gen) write(s string) {

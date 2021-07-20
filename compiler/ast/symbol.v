@@ -23,8 +23,7 @@ pub mut:
 	from_lit   bool
 	typ        Type
 	scope      &Scope = 0
-pub:
-	pos token.Position
+	pos        token.Position
 }
 
 pub fn (sym Symbol) str() string {

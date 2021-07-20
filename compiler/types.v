@@ -48,7 +48,7 @@ pub fn (mut c Context) get_unresolved_type(typ ast.Type) &ast.Symbol {
 [inline]
 pub fn (mut c Context) get_type_name(typ ast.Type) string {
 	if typ.has_flag(.unresolved) {
-		return c.get_unresolved_type(typ).gname
+		return c.get_unresolved_type(typ).name
 	}
 	return c.get_type_symbol(typ).name
 }

@@ -203,7 +203,28 @@ fn (mut p Parser) parse_literal() ast.Expr {
 			mut sym := p.parse_symbol()
 			sym.typ = typ
 			sym.from_lit = true
+			sym.pos = pos.extend(p.prev_tok.position())
 			return ast.Expr(sym)
+		}
+		.lbracket {
+			mut elems := []ast.Expr{}
+			p.next()
+			if p.tok.kind != .rbracket {
+				for {
+					elems << p.parse_literal()
+					if !p.accept(.comma) {
+						break
+					}
+				}
+			}
+			pos = pos.extend(p.tok.position())
+			p.check(.rbracket)
+			return ast.ArrayLiteral{
+				elems: elems
+				size: elems.len
+				typ: typ
+				pos: pos
+			}
 		}
 		else {}
 	}

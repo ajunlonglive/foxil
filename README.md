@@ -12,7 +12,7 @@ as a backend.
 
 The idea is to facilitate code generation, allowing you to use a single syntax to
 generate code for several languages. For now Foxil generates C code, but more languages
-will be added very soon, such as C ++, or JavaScript / TypeScript. If you want to add
+will be added very soon, such as C++, or JavaScript/TypeScript. If you want to add
 your own backend, don't hesitate to do it!
 
 ## Example
@@ -36,7 +36,6 @@ converted to Foxil:
 extern func @puts(char*) i32
 
 func @main(i32 %argc, char** %argv) i32 {
-    ; char* i8ptr = &_str[0];
     %charptr = get_element_ptr [13 x char], [13 x char] @.str, i64 0
     call i32 @puts(char* %charptr)
     ret i32 0

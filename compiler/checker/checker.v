@@ -103,6 +103,22 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 		ast.StringLiteral {
 			return expr.typ
 		}
+		ast.ArrayLiteral {
+			mut elem_t := ast.Type(0)
+			for i, elem in expr.elems {
+				t := c.expr(&elem)
+				if i == 0 {
+					elem_t = t
+				} else {
+					c.check_types(t, elem_t) or {
+						report.error('$err.msg, in array literal', elem.pos).emit()
+					}
+				}
+			}
+			t := ast.Type(g_context.find_or_register_array(elem_t, expr.size))
+			expr.typ = t
+			return t
+		}
 		ast.VoidRet {
 			return ast.void_type
 		}
@@ -151,10 +167,6 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 		}
 		ast.EmptyExpr {
 			report.error('checker: empty expression', expr.pos).emit()
-			return ast.void_type
-		}
-		else {
-			report.error('checker: unsupported expression: `$expr.type_name()`', expr.pos).emit()
 			return ast.void_type
 		}
 	}
@@ -249,6 +261,10 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 
 fn (mut c Checker) typ(typ ast.Type) ast.Type {
 	if !typ.has_flag(.unresolved) {
+		mut ts := g_context.get_type_symbol(typ)
+		if mut ts.info is ast.ArrayInfo {
+			ts.info.elem_type = c.typ(ts.info.elem_type)
+		}
 		return typ
 	}
 	c.expecting_typ = true
