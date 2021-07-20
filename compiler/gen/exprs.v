@@ -55,16 +55,16 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 		}
 		'cast' {
-            ts := g_context.get_type_symbol(instr.typ)
-            e := instr.args[0]
-            // arrays are already pointers :)
-            if ts.kind != .array && !instr.typ.is_ptr() {
-                g.write('((${g.typ(instr.typ)})')
-                g.expr(e)
-                g.write(')')
-            } else {
-                g.expr(e)
-            }
+			ts := g_context.get_type_symbol(instr.typ)
+			e := instr.args[0]
+			// arrays are already pointers :)
+			if ts.kind == .array && instr.typ.is_ptr() {
+				g.expr(e)
+			} else {
+				g.write('((${g.typ(instr.typ)})')
+				g.expr(e)
+				g.write(')')
+			}
 		}
 		'call' {
 			cexpr := instr.args[0] as ast.CallExpr
@@ -101,7 +101,7 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 			g.write('false')
 		}
 		ast.char_type {
-			g.write(r"'\\0'")
+			g.write(r"'\0'")
 		}
 		ast.i8_type, ast.i16_type, ast.i32_type, ast.i64_type, ast.u8_type, ast.u16_type,
 		ast.u32_type, ast.u64_type {
