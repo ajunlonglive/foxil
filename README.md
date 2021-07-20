@@ -6,14 +6,19 @@ Easy and safe
 
 </div>
 
-Foxil is an intermediate language developed to facilitate the creation of programming
-languages. Foxil uses a syntax inspired by LLVM-IR, and uses the C programming language
-as a backend.
+Foxil is an intermediate language designed to facilitate compiler code generation. Foxil
+uses an easy and easy to read LLVM-IR inspired syntax and generates C code.
 
-The idea is to facilitate code generation, allowing you to use a single syntax to
-generate code for several languages. For now Foxil generates C code, but more languages
-will be added very soon, such as C++, or JavaScript/TypeScript. If you want to add
-your own backend, don't hesitate to do it!
+For now C code is generated, maybe in the future JavaScript code will be generated, and
+possibly also x86 assembly code.
+
+**Note:** Foxil is not designed to replace LLVM.
+
+## Features
+
+* Simple and easy to read syntax
+* Built-in functions
+* Undefined values ​​are not allowed
 
 ## Example
 
@@ -29,8 +34,6 @@ int main() {
 converted to Foxil:
 
 ```llvm
-; A simple "Hello World"
-
 extern func @puts(char*) i32
 
 func @main(i32 %argc, char** %argv) i32 {
@@ -41,9 +44,31 @@ func @main(i32 %argc, char** %argv) i32 {
 }
 ```
 
+To see more examples, you can go to the [`examples`](examples/) folder.
+
 ## Requirements
 
 * V compiler ^0.2.2
+* Any C compiler (GCC, clang, etc.)
+
+## Compilation
+
+To compile Foxil you need the [V language compiler](https://github.com/vlang/v).
+Having installed the V compiler, we proceed to execute in the terminal:
+
+```bash
+$ git clone https://github.com/StunxFS/foxil
+$ cd foxil
+$ make
+```
+
+A binary will be generated in the `bin` folder. To see if it works we execute the
+binary passing it the option `--version`:
+
+```bash
+$ ./bin/foxilc --version
+foxilc version 0.1.0-alpha
+```
 
 ## Contributions
 
