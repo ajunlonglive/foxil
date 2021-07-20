@@ -198,3 +198,5 @@ pub fn (mut g Gen) writeln(s string) {
 }
 // delete-me
 // delete-me
+fn (mut g Gen) fn_test_format_yml() {}
+// delete-me
