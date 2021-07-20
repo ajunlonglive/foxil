@@ -195,7 +195,6 @@ fn (mut c Checker) call_expr(mut ce ast.CallExpr) ast.Type {
 			args_count := ce.args.len
 			fn_args_count := fn_node.args.len
 			msg := '$fn_args_count argument(s) are expected, not $args_count'
-			// TODO: allow variadic arguments
 			if args_count < fn_args_count {
 				report.error('too few arguments to function ‘$ce_fn’ ($msg)', ce.pos).emit()
 			} else if args_count > fn_args_count && !fn_node.use_c_varargs {
