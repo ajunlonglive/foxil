@@ -38,6 +38,8 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 			t := c.expr(&stmt.right)
 			if stmt.right is ast.InstrExpr && (stmt.right as ast.InstrExpr).name == 'ret' {
 				report.error('instruction `ret` cannot be used as an expression', stmt.pos).emit()
+			} else if t.is_void() {
+				report.error('this instruction does not return a value', stmt.right.pos).emit()
 			}
 			stmt.left.typ = t
 			mut nsym := stmt.left.scope.lookup(stmt.left.name) or {
