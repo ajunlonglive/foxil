@@ -7,7 +7,8 @@ import compiler.ast
 
 pub struct Checker {
 mut:
-	expecting_typ bool
+	cur_fn_ret_typ ast.Type
+	expecting_typ  bool
 }
 
 pub fn run_checker() {
@@ -30,6 +31,7 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 				arg.typ = c.typ(arg.typ)
 			}
 			stmt.ret_typ = c.typ(stmt.ret_typ)
+			c.cur_fn_ret_typ = stmt.ret_typ
 			mut has_return := false
 			for i, mut dd_stmt in stmt.stmts {
 				if !stmt.ret_typ.is_void() && !stmt.is_extern && i == stmt.stmts.len - 1
@@ -217,6 +219,9 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		}
 		'ret' {
 			instr.typ = c.expr(&instr.args[0])
+			c.check_types(instr.typ, c.cur_fn_ret_typ) or {
+				report.error('$err.msg, in return argument', instr.args[0].pos).emit()
+			}
 			return instr.typ
 		}
 		else {
