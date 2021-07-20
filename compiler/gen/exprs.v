@@ -37,10 +37,11 @@ fn (mut g Gen) expr(expr ast.Expr) {
 fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 	match instr.name {
 		'alloca' {
-			// TODO: Auto-initialize
 			if instr.args.len == 2 {
-				g.write(' = ')
 				g.expr(instr.args[1])
+			} else {
+				// we write a default value
+				g.write_default_value(instr.typ)
 			}
 		}
 		'call' {
@@ -64,6 +65,36 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 		}
 		else {
 			g.write('/* TODO: implement instruction: $instr.name */')
+		}
+	}
+}
+
+fn (mut g Gen) write_default_value(typ ast.Type) {
+	match typ {
+		ast.void_type {
+			// this should never happen
+			g.write('/*void*/')
+		}
+		ast.bool_type {
+			g.write('false')
+		}
+		ast.char_type, ast.uchar_type {
+			g.write(r"'\0'")
+		}
+		ast.i8_type, ast.i16_type, ast.i32_type, ast.i64_type, ast.u8_type, ast.u16_type,
+		ast.u32_type, ast.u64_type {
+			g.write('0')
+		}
+		ast.f32_type, ast.f64_type {
+			g.write('0.0')
+		}
+		ast.rawptr_type {
+			// TODO: this should not be NULL (in the future, we should
+			// create pointers to values ​​by default)
+			g.write('NULL')
+		}
+		else {
+			// TODO: here go the structs
 		}
 	}
 }

@@ -58,6 +58,7 @@ pub fn run_gen() {
 #include <inttypes.h>
 #define true  (1)
 #define false (0)
+#define NULL  (0)
 // =================== END ====================
 ')
 	if g.typedefs.len > 0 {
@@ -147,11 +148,7 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 		ast.AssignStmt {
 			sym := stmt.left
 			g.write('${g.typ(sym.typ)} $sym.gname')
-			// TODO: remove this `if expr`, and always write the ` = `, when `alloca`
-			// generate default values
-			if stmt.right is ast.InstrExpr && (stmt.right as ast.InstrExpr).name != 'alloca' {
-				g.write(' = ')
-			}
+			g.write(' = ')
 			g.expr(stmt.right)
 			g.writeln(';')
 		}
