@@ -201,3 +201,4 @@ pub fn (mut g Gen) writeln(s string) {
 fn (mut g Gen) fn_test_format_yml() {}
 // delete-me
 // delete-me
+// delete-me
