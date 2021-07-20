@@ -114,6 +114,12 @@ fn (mut g Gen) stmts(stmts []ast.Stmt) {
 fn (mut g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
 		ast.FuncDecl {
+			if stmt.is_extern {
+				g.fns.write_string('extern ')
+			}
+			if stmt.stmts.len > 0 && stmt.stmts.len < 3 && !stmt.is_extern {
+				g.write('inline ')
+			}
 			header_fn := '${g.typ(stmt.ret_typ)} ${stmt.sym.gname}('
 			g.fns.write_string(header_fn)
 			if !stmt.is_extern {
@@ -138,12 +144,14 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 				g.indent++
 				g.stmts(stmt.stmts)
 				g.indent--
-				g.writeln('}')
+				g.writeln('}\n')
 			}
 		}
 		ast.AssignStmt {
 			sym := stmt.left
 			g.write('${g.typ(sym.typ)} $sym.gname')
+			// TODO: remove this `if expr`, and always write the ` = `, when `alloca`
+			// generate default values
 			if stmt.right is ast.InstrExpr && (stmt.right as ast.InstrExpr).name != 'alloca' {
 				g.write(' = ')
 			}
