@@ -1,0 +1,43 @@
+name: tests
+
+on:
+  push:
+    paths: ['**.v', '**.vsh']
+    branches: [main]
+  pull_request:
+    paths: ['**.v', '**.vsh']
+    types: [opened, synchronize]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout V
+        uses: actions/checkout@v2
+        with:
+          repository: vlang/v
+
+      - name: Build V
+        run: |
+          make
+          sudo ./v symlink
+
+      - name: Checkout blux source code
+        uses: actions/checkout@v2
+        with:
+          path: foxil
+    
+      - name: Build Foxil
+        run: |
+          cd ./foxil
+          make
+
+      - name: Run compiler tests
+        run: |
+          cd ./foxil
+          make test-compiler
+
+      - name: Run checker tests
+        run: |
+          cd ./foxil
+          make test-checker
