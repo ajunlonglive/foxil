@@ -24,6 +24,15 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 				instr.args << p.parse_literal()
 			}
 		}
+		'cast' {
+			instr.args << p.parse_literal()
+			p.check(.key_as)
+			pos2 := p.tok.position()
+			instr.args << ast.TypeNode{
+				typ: p.parse_type()
+				pos: pos2
+			}
+		}
 		'call' {
 			typ := p.parse_type()
 			sym := p.parse_symbol()

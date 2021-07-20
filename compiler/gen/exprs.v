@@ -44,6 +44,11 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 				g.write_default_value(instr.typ)
 			}
 		}
+		'cast' {
+			g.write('((${g.typ(instr.typ)})')
+			g.expr(instr.args[0])
+			g.write(')')
+		}
 		'call' {
 			cexpr := instr.args[0] as ast.CallExpr
 			g.expr(cexpr.left)

@@ -202,7 +202,7 @@ fn (mut c Checker) call_expr(mut ce ast.CallExpr) ast.Type {
 fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 	match instr.name {
 		'alloca' {
-			instr.typ = c.typ(&(instr.args[0] as ast.TypeNode).typ)
+			instr.typ = c.typ((instr.args[0] as ast.TypeNode).typ)
 			if instr.args.len > 1 {
 				expr_t := c.expr(&instr.args[1])
 				c.check_types(expr_t, instr.typ) or {
@@ -212,6 +212,23 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 				instr.typ = expr_t
 			}
 			return instr.typ
+		}
+		'cast' {
+			from_t := c.expr(&instr.args[0])
+			to_t := c.typ((instr.args[1] as ast.TypeNode).typ)
+			if (from_t.is_number() && to_t.is_number())
+				|| (from_t.is_bool() && to_t.is_number())
+				|| (from_t.is_char_or_uchar() && to_t.is_number())
+				|| (from_t.is_number() && to_t.is_char_or_uchar())
+				|| (from_t.is_rawptr() && to_t.is_ptr())
+				|| (from_t.is_ptr() && to_t.is_rawptr()) {
+				instr.typ = to_t
+				return to_t
+			} else {
+				report.error('cannot cast `${ast.typ2str(from_t)}` to `${ast.typ2str(to_t)}`',
+					instr.pos).emit()
+			}
+			return from_t
 		}
 		'call' {
 			instr.typ = c.expr(&instr.args[0])
@@ -243,7 +260,7 @@ fn (mut c Checker) typ(typ ast.Type) ast.Type {
 
 fn (mut c Checker) check_types(got ast.Type, expected ast.Type) ? {
 	if !c.are_compatible_types(got, expected) {
-		return error('expecting ${ast.typ2str(expected)}, not ${ast.typ2str(got)}')
+		return error('expecting `${ast.typ2str(expected)}`, not `${ast.typ2str(got)}`')
 	}
 }
 

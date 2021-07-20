@@ -40,6 +40,7 @@ pub enum Kind {
 	rbracket // ]
 	// ========== keywords ==========
 	keyword_begin
+	key_as // as
 	key_const // const
 	key_func // func
 	key_type // type
@@ -84,6 +85,7 @@ const tokens = map{
 	Kind.rparen:     ')'
 	Kind.lbracket:   '['
 	Kind.rbracket:   ']'
+	Kind.key_as:     'as'
 	Kind.key_const:  'const'
 	Kind.key_func:   'func'
 	Kind.key_type:   'type'
