@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout V
-       uses: actions/checkout@v2
-       with:
+        uses: actions/checkout@v2
+        with:
           repository: vlang/v
 
       - name: Build V
@@ -35,10 +35,10 @@ jobs:
           if [[ ! -z $(git status -s) ]]; then
             git add cmd/ compiler/
             git commit -m "all: format source code"
-         fi
+          fi
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-         branch: ${{ github.ref }}
+          branch: ${{ github.ref }}
