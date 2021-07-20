@@ -146,17 +146,17 @@ fn (mut p Parser) parse_literal() ast.Expr {
 	match p.tok.kind {
 		.key_true, .key_false {
 			kind := p.tok.kind
-            pos = pos.extend(p.tok.position())
+			pos = pos.extend(p.tok.position())
 			p.check(p.tok.kind)
 			return ast.BoolLiteral{
-				lit: kind==.key_true
+				lit: kind == .key_true
 				pos: pos
 				typ: typ
 			}
 		}
 		.char {
 			lit := p.tok.lit
-            pos = pos.extend(p.tok.position())
+			pos = pos.extend(p.tok.position())
 			p.check(.char)
 			return ast.CharLiteral{
 				lit: lit
@@ -170,7 +170,7 @@ fn (mut p Parser) parse_literal() ast.Expr {
 				p.check(.name)
 			}
 			lit := p.tok.lit
-            pos = pos.extend(p.tok.position())
+			pos = pos.extend(p.tok.position())
 			p.check(.string)
 			return ast.StringLiteral{
 				lit: lit
@@ -186,7 +186,7 @@ fn (mut p Parser) parse_literal() ast.Expr {
 			}
 			lit := p.tok.lit
 			full_lit := if is_neg { '-' + lit } else { lit }
-            pos = pos.extend(p.tok.position())
+			pos = pos.extend(p.tok.position())
 			node := if lit.index_any('.eE') >= 0 && lit[..2].to_lower() !in ['0x', '0o', '0b'] { ast.Expr(ast.FloatLiteral{
 					lit: full_lit
 					pos: pos
@@ -320,11 +320,8 @@ fn (mut p Parser) parse_declarations() []ast.Stmt {
 	mut stmts := []ast.Stmt{}
 	for p.tok.kind != .eof {
 		match p.tok.kind {
-			.key_def {
-				stmts << p.parse_def_declaration()
-			}
-			.key_decl {
-				stmts << p.parse_decl_declaration()
+			.key_extern, .key_func {
+				stmts << p.parse_func_declaration()
 			}
 			.at {
 				stmts << p.parse_assign() // TODO: p.parse_global_assign()
@@ -373,42 +370,37 @@ fn (mut p Parser) parse_args(is_def bool) ([]&ast.Symbol, bool) {
 	return args, use_c_varargs
 }
 
-fn (mut p Parser) parse_decl_declaration() ast.Stmt {
+fn (mut p Parser) parse_func_declaration() ast.Stmt {
 	pos := p.tok.position()
-	p.check(.key_decl)
-	mut sym := p.parse_symbol_with_kind(.function)
-	p.open_scope()
-	args, use_c_varargs := p.parse_args(true)
-	typ := p.parse_type()
-	sym.typ = typ
-	node := ast.DeclStmt{
-		sym: sym
-		args: args
-		use_c_varargs: use_c_varargs
-		ret_typ: typ
-		pos: pos.extend(p.prev_tok.position())
+	mut is_extern := p.tok.kind == .key_extern
+	if is_extern {
+		p.next()
 	}
-	sym.node = node
-	g_context.root.add(sym.name, sym)
-	return node
-}
-
-fn (mut p Parser) parse_def_declaration() ast.Stmt {
-	p.check(.key_def)
+	p.check(.key_func)
 	mut sym := p.parse_symbol_with_kind(.function)
 	p.open_scope()
-	args, _ := p.parse_args(false)
+	args, use_c_varargs := p.parse_args(is_extern)
 	typ := p.parse_type()
-	p.check(.lbrace)
-	stmts := p.parse_stmts()
-	p.check(.rbrace)
+	mut stmts := []ast.Stmt{}
+	if p.tok.kind == .lbrace {
+		if is_extern {
+			report.error('external functions cannot have bodies', pos.extend(p.tok.position())).emit()
+		} else {
+			p.check(.lbrace)
+			stmts = p.parse_stmts()
+			p.check(.rbrace)
+		}
+	}
 	p.close_scope()
 	sym.typ = typ
-	mut node := ast.DefDecl{
+	mut node := ast.FuncDecl{
 		sym: sym
 		args: args
 		stmts: stmts
+		use_c_varargs: use_c_varargs
 		ret_typ: typ
+		is_extern: is_extern
+		pos: pos.extend(p.prev_tok.position())
 	}
 	sym.node = node
 	g_context.root.add(sym.name, sym)

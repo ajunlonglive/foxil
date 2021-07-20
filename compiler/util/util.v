@@ -30,7 +30,7 @@ pub fn skip_bom(file_content string) string {
 pub fn convert_to_valid_c_ident(str string) string {
 	mut res := ''
 	for c in str {
-		if is_name_char(c) {
+		if is_func_char(c) {
 			res += c.ascii_str()
 		} else {
 			if c == `.` {

@@ -25,13 +25,7 @@ fn (mut c Checker) check_file(mut sf ast.SourceFile) {
 
 fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 	match mut stmt {
-		ast.DeclStmt {
-			for mut arg in stmt.args {
-				arg.typ = c.typ(arg.typ)
-			}
-			stmt.ret_typ = c.typ(stmt.ret_typ)
-		}
-		ast.DefDecl {
+		ast.FuncDecl {
 			for mut arg in stmt.args {
 				arg.typ = c.typ(arg.typ)
 			}
@@ -159,16 +153,16 @@ fn (mut c Checker) call_expr(mut ce ast.CallExpr) ast.Type {
 		if ce_fn.kind != .function {
 			report.error('symbol `$ce_fn` is not a function, is a $ce_fn.kind', ce.pos).emit()
 		} else {
-			mut fn_node := ce_fn.node as ast.DefDecl
+			mut fn_node := ce_fn.node as ast.FuncDecl
 			args_count := ce.args.len
 			fn_args_count := fn_node.args.len
 			msg := '$fn_args_count argument(s) are expected, not $args_count'
+			// TODO: allow variadic arguments
 			if args_count < fn_args_count {
 				report.error('too few arguments to function ‘$ce_fn’, ($msg)', ce.pos).emit()
 			} else if args_count > fn_args_count {
 				report.error('too many arguments to function ‘$ce_fn’ ($msg)', ce.pos).emit()
 			} else {
-				// TODO: allow variadic arguments
 				for i, mut arg in ce.args {
 					arg_typ := c.expr(&arg.expr)
 					if i < fn_args_count {

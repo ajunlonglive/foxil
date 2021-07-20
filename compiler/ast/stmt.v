@@ -5,29 +5,21 @@ module ast
 
 import compiler.token
 
-type Stmt = AssignStmt | DeclStmt | DefDecl | EmptyStmt | ExprStmt
+type Stmt = AssignStmt | EmptyStmt | ExprStmt | FuncDecl
 
 pub struct EmptyStmt {
 pub:
 	pos token.Position
 }
 
-pub struct DefDecl {
-pub mut:
-	sym     &Symbol
-	args    []&Symbol
-	ret_typ Type
-	stmts   []Stmt
-pub:
-	pos token.Position
-}
-
-pub struct DeclStmt {
+pub struct FuncDecl {
 pub mut:
 	sym           &Symbol
-	use_c_varargs bool
 	args          []&Symbol
 	ret_typ       Type
+	use_c_varargs bool
+	is_extern     bool
+	stmts         []Stmt
 pub:
 	pos token.Position
 }

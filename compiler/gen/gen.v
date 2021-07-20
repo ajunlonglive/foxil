@@ -113,42 +113,40 @@ fn (mut g Gen) stmts(stmts []ast.Stmt) {
 
 fn (mut g Gen) stmt(stmt ast.Stmt) {
 	match stmt {
-		ast.DeclStmt {
-			g.fns.write_string('${g.typ(stmt.ret_typ)} ${stmt.sym.gname}(')
-			for i, arg in stmt.args {
-				g.fns.write_string(g.typ(arg.typ))
-				if arg.name != '' {
-					g.fns.write_string(' $arg.name')
-				}
-				if i != stmt.args.len - 1 {
-					g.fns.write_string(', ')
-				}
-			}
-			g.fns.writeln(');')
-		}
-		ast.DefDecl {
+		ast.FuncDecl {
 			header_fn := '${g.typ(stmt.ret_typ)} ${stmt.sym.gname}('
 			g.fns.write_string(header_fn)
-			g.write(header_fn)
+			if !stmt.is_extern {
+				g.write(header_fn)
+			}
 			for i, arg in stmt.args {
 				arg_ := '${g.typ(arg.typ)} $arg.gname'
 				g.fns.write_string(arg_)
-				g.write(arg_)
+				if !stmt.is_extern {
+					g.write(arg_)
+				}
 				if i != stmt.args.len - 1 {
 					g.fns.write_string(', ')
-					g.write(', ')
+					if !stmt.is_extern {
+						g.write(', ')
+					}
 				}
 			}
 			g.fns.writeln(');')
-			g.writeln(') {')
-			g.indent++
-			g.stmts(stmt.stmts)
-			g.indent--
-			g.writeln('}')
+			if !stmt.is_extern {
+				g.writeln(') {')
+				g.indent++
+				g.stmts(stmt.stmts)
+				g.indent--
+				g.writeln('}')
+			}
 		}
 		ast.AssignStmt {
 			sym := stmt.left
 			g.write('${g.typ(sym.typ)} $sym.gname')
+			if stmt.right is ast.InstrExpr && (stmt.right as ast.InstrExpr).name != 'alloca' {
+				g.write(' = ')
+			}
 			g.expr(stmt.right)
 			g.writeln(';')
 		}

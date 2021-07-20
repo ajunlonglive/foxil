@@ -41,57 +41,55 @@ pub enum Kind {
 	// ========== keywords ==========
 	keyword_begin
 	key_const // const
-	key_decl // decl
-	key_def // def
-	key_pub // pub
+	key_func // func
 	key_type // type
 	key_true // true
 	key_false // false
+	key_extern // extern
 	keyword_end
 }
 
 // value of tokens
 const tokens = map{
-	Kind.unknown:   'unknown'
-	Kind.eof:       'end of file'
-	Kind.name:      'name'
-	Kind.number:    'number'
-	Kind.string:    'string'
-	Kind.char:      'character'
-	Kind.nl:        '\\n'
-	Kind.plus:      '+'
-	Kind.minus:     '-'
-	Kind.mult:      '*'
-	Kind.div:       '/'
-	Kind.mod:       '%'
-	Kind.xor:       '^'
-	Kind.pipe:      '|'
-	Kind.bit_not:   '~'
-	Kind.not:       '!'
-	Kind.question:  '?'
-	Kind.hash:      '#'
-	Kind.comma:     ','
-	Kind.colon:     ':'
-	Kind.amp:       '&'
-	Kind.dollar:    '$'
-	Kind.at:        '@'
-	Kind.assign:    '='
-	Kind.dot:       '.'
-	Kind.dot_dot:   '..'
-	Kind.ellipsis:  '...'
-	Kind.lbrace:    '{'
-	Kind.rbrace:    '}'
-	Kind.lparen:    '('
-	Kind.rparen:    ')'
-	Kind.lbracket:  '['
-	Kind.rbracket:  ']'
-	Kind.key_const: 'const'
-	Kind.key_decl:  'decl'
-	Kind.key_def:   'def'
-	Kind.key_pub:   'pub'
-	Kind.key_type:  'type'
-	Kind.key_true:  'true'
-	Kind.key_false: 'false'
+	Kind.unknown:    'unknown'
+	Kind.eof:        'end of file'
+	Kind.name:       'name'
+	Kind.number:     'number'
+	Kind.string:     'string'
+	Kind.char:       'character'
+	Kind.nl:         '\\n'
+	Kind.plus:       '+'
+	Kind.minus:      '-'
+	Kind.mult:       '*'
+	Kind.div:        '/'
+	Kind.mod:        '%'
+	Kind.xor:        '^'
+	Kind.pipe:       '|'
+	Kind.bit_not:    '~'
+	Kind.not:        '!'
+	Kind.question:   '?'
+	Kind.hash:       '#'
+	Kind.comma:      ','
+	Kind.colon:      ':'
+	Kind.amp:        '&'
+	Kind.dollar:     '$'
+	Kind.at:         '@'
+	Kind.assign:     '='
+	Kind.dot:        '.'
+	Kind.dot_dot:    '..'
+	Kind.ellipsis:   '...'
+	Kind.lbrace:     '{'
+	Kind.rbrace:     '}'
+	Kind.lparen:     '('
+	Kind.rparen:     ')'
+	Kind.lbracket:   '['
+	Kind.rbracket:   ']'
+	Kind.key_const:  'const'
+	Kind.key_func:   'func'
+	Kind.key_type:   'type'
+	Kind.key_true:   'true'
+	Kind.key_false:  'false'
+	Kind.key_extern: 'extern'
 }
 
 fn make_keys() map[string]Kind {
