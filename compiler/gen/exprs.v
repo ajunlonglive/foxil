@@ -55,12 +55,17 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 		}
 		'br' {
-			g.write('if (')
-			g.expr(instr.args[0])
-			g.write(') goto ')
-			g.write((instr.args[1] as ast.Symbol).name)
-			g.write('; else goto ')
-			g.write((instr.args[2] as ast.Symbol).name)
+			if instr.args.len == 3 {
+				g.write('if (')
+				g.expr(instr.args[0])
+				g.write(') goto ')
+				g.write((instr.args[1] as ast.Symbol).name)
+				g.write('; else goto ')
+				g.write((instr.args[2] as ast.Symbol).name)
+			} else {
+				label := (instr.args[0] as ast.Symbol).name
+				g.write('goto $label')
+			}
 		}
 		'cast' {
 			ts := g_context.get_type_symbol(instr.typ)
@@ -119,10 +124,6 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 				else {}
 			}
 			g.expr(instr.args[2])
-		}
-		'goto' {
-			label := (instr.args[0] as ast.Symbol).name
-			g.write('goto $label')
 		}
 		'load' {
 			if instr.typ.is_ptr() || instr.typ.is_rawptr() {

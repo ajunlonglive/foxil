@@ -25,20 +25,31 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			}
 		}
 		'br' {
-			instr.args << p.parse_literal()
-			p.check(.comma)
-			ltpos := p.tok.position()
-			ltlabel := p.parse_identifier()
-			instr.args << ast.Symbol{
-				name: ltlabel
-				pos: ltpos
-			}
-			p.check(.comma)
-			lfpos := p.tok.position()
-			lflabel := p.parse_identifier()
-			instr.args << ast.Symbol{
-				name: lflabel
-				pos: lfpos
+			if p.peek_token(3).kind == .comma {
+				// br <COND>, <TRUE-LABEL>, <FALSE-LABEL>
+				instr.args << p.parse_literal()
+				p.check(.comma)
+				ltpos := p.tok.position()
+				ltlabel := p.parse_identifier()
+				instr.args << ast.Symbol{
+					name: ltlabel
+					pos: ltpos
+				}
+				p.check(.comma)
+				lfpos := p.tok.position()
+				lflabel := p.parse_identifier()
+				instr.args << ast.Symbol{
+					name: lflabel
+					pos: lfpos
+				}
+			} else {
+				// br <LABEL>
+				lpos := p.tok.position()
+				label := p.parse_identifier()
+				instr.args << ast.Symbol{
+					name: label
+					pos: lpos
+				}
 			}
 		}
 		'cast' {
@@ -90,14 +101,6 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			instr.args << p.parse_literal()
 			p.check(.comma)
 			instr.args << p.parse_literal()
-		}
-		'goto' {
-			lpos := p.tok.position()
-			label := p.parse_identifier()
-			instr.args << ast.Symbol{
-				name: label
-				pos: lpos
-			}
 		}
 		'load' {
 			instr.args << p.parse_literal()

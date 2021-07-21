@@ -240,17 +240,24 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			return instr.typ
 		}
 		'br' {
-			t := c.expr(&instr.args[0])
-			if !t.is_bool() {
-				report.error('boolean literal expected', instr.args[0].pos).emit()
-			}
-			tlabel := (instr.args[1] as ast.Symbol)
-			if tlabel.name !in c.cur_fn.labels {
-				report.error('label `$tlabel.name` not found', tlabel.pos).emit()
-			}
-			flabel := (instr.args[2] as ast.Symbol)
-			if flabel.name !in c.cur_fn.labels {
-				report.error('label `$flabel.name` not found', flabel.pos).emit()
+			if instr.args.len == 3 {
+				t := c.expr(&instr.args[0])
+				if !t.is_bool() {
+					report.error('boolean literal expected', instr.args[0].pos).emit()
+				}
+				tlabel := (instr.args[1] as ast.Symbol)
+				if tlabel.name !in c.cur_fn.labels {
+					report.error('label `$tlabel.name` not found', tlabel.pos).emit()
+				}
+				flabel := (instr.args[2] as ast.Symbol)
+				if flabel.name !in c.cur_fn.labels {
+					report.error('label `$flabel.name` not found', flabel.pos).emit()
+				}
+			} else {
+				label := (instr.args[0] as ast.Symbol)
+				if label.name !in c.cur_fn.labels {
+					report.error('label `$label.name` not found', label.pos).emit()
+				}
 			}
 		}
 		'cast' {
@@ -289,12 +296,6 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			}
 			instr.typ = ast.bool_type
 			return instr.typ
-		}
-		'goto' {
-			label := (instr.args[0] as ast.Symbol)
-			if label.name !in c.cur_fn.labels {
-				report.error('label `$label.name` not found', label.pos).emit()
-			}
 		}
 		'load' {
 			t := c.expr(&instr.args[0])
