@@ -11,12 +11,12 @@ func @main() i32 {
 
 is:
     %.str.2 = cast [25 x char] "is greater than 18 ages\n" as char*
-    call i32 @printf(char* %.str.2, i32 %age)
+    call i32 @printf(char* %.str.2)
     goto end
 
 not_is:
     %.str.3 = cast [29 x char] "is not greater than 18 ages\n" as char*
-    call i32 @printf(char* %.str.3, i32 %age)
+    call i32 @printf(char* %.str.3)
 
 end:
     ret i32 0

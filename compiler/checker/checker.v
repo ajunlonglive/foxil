@@ -245,7 +245,7 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			if tlabel.name !in c.cur_fn.labels {
 				report.error('label `$tlabel.name` not found', tlabel.pos).emit()
 			}
-			flabel := (instr.args[1] as ast.Symbol)
+			flabel := (instr.args[2] as ast.Symbol)
 			if flabel.name !in c.cur_fn.labels {
 				report.error('label `$flabel.name` not found', flabel.pos).emit()
 			}
