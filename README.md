@@ -20,7 +20,7 @@ possibly also x86 assembly code.
 * Built-in functions
 * Undefined values ​​are not allowed
 
-## Example
+## Examples
 
 ```c
 extern int puts(char*);

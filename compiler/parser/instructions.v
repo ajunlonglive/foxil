@@ -61,6 +61,19 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 				pos: pos
 			}
 		}
+		'cmp' {
+			cond_pos := p.tok.position()
+			cond := p.parse_identifier()
+			if cond !in ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] {
+				report.error('invalid condition code', cond_pos).emit()
+			}
+			instr.args << ast.Symbol{
+				name: cond
+			}
+			instr.args << p.parse_literal()
+			p.check(.comma)
+			instr.args << p.parse_literal()
+		}
 		'ret' {
 			instr.args << p.parse_literal()
 		}

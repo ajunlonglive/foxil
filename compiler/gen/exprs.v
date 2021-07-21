@@ -78,6 +78,40 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 			g.write(')')
 		}
+		'cmp' {
+			g.expr(instr.args[1])
+			cond := (instr.args[0] as ast.Symbol).name
+			/*
+			eq: equal
+            ne: not equal
+            gt: greater than
+            ge: greater or equal
+            lt: less than
+            le: less or equal
+			*/
+			match cond {
+				'eq' {
+					g.write(' == ')
+				}
+				'ne' {
+					g.write(' != ')
+				}
+				'gt' {
+					g.write(' > ')
+				}
+				'ge' {
+					g.write(' >= ')
+				}
+				'lt' {
+					g.write(' < ')
+				}
+				'le' {
+					g.write(' <= ')
+				}
+				else {}
+			}
+			g.expr(instr.args[2])
+		}
 		'ret' {
 			g.write('return')
 			if !instr.typ.is_void() {

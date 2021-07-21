@@ -34,7 +34,7 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 			c.cur_fn_ret_typ = stmt.ret_typ
 			mut has_return := false
 			for mut dd_stmt in stmt.stmts {
-				if !stmt.ret_typ.is_void() && !stmt.is_extern && mut dd_stmt is ast.ExprStmt {
+				if !stmt.is_extern && mut dd_stmt is ast.ExprStmt {
 					if dd_stmt.expr is ast.InstrExpr
 						&& (dd_stmt.expr as ast.InstrExpr).name == 'ret' {
 						has_return = true
@@ -259,6 +259,15 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		}
 		'call' {
 			instr.typ = c.expr(&instr.args[0])
+			return instr.typ
+		}
+		'cmp' {
+			op1 := c.expr(&instr.args[1])
+			op2 := c.expr(&instr.args[2])
+			c.check_types(op2, op1) or {
+				report.error('$err.msg, in the second comparison operand', instr.pos).emit()
+			}
+			instr.typ = ast.bool_type
 			return instr.typ
 		}
 		'ret' {
