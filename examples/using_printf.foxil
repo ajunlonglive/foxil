@@ -1,8 +1,7 @@
 extern func @printf(char*, ...) i32
 
 func @main() i32 {
-    %str2 = alloca [18 x char], [18 x char] "Current year: %d\n"
-    %cstr2 = cast [18 x char] %str2 as char*
+    %cstr2 = cast [18 x char] "Current year: %d\n" as char*
     %value = alloca i32, i32 2000
     %res = call i32 @printf(char* %cstr2, i32 %value)
     ret i32 %res

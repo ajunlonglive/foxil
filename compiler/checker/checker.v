@@ -33,9 +33,8 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 			stmt.ret_typ = c.typ(stmt.ret_typ)
 			c.cur_fn_ret_typ = stmt.ret_typ
 			mut has_return := false
-			for i, mut dd_stmt in stmt.stmts {
-				if !stmt.ret_typ.is_void() && !stmt.is_extern && i == stmt.stmts.len - 1
-					&& mut dd_stmt is ast.ExprStmt {
+			for mut dd_stmt in stmt.stmts {
+				if !stmt.ret_typ.is_void() && !stmt.is_extern && mut dd_stmt is ast.ExprStmt {
 					if dd_stmt.expr is ast.InstrExpr
 						&& (dd_stmt.expr as ast.InstrExpr).name == 'ret' {
 						has_return = true

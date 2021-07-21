@@ -3,8 +3,7 @@
 extern func @puts(char*) i32
 
 func @main(i32 %argc, char** %argv) i32 {
-    %str = alloca [12 x char], [12 x char] "Hello World!"
-    %cstr = cast [12 x char] %str as char*
+    %cstr = cast [12 x char] "Hello World!" as char*
     call i32 @puts(char* %cstr)
     ret i32 0
 }
