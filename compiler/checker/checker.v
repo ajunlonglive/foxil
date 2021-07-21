@@ -64,6 +64,9 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 		ast.ExprStmt {
 			c.expr(&stmt.expr)
 		}
+		ast.LabelStmt {
+			// no checks
+		}
 		else {
 			report.error('checker: unsupported statement: `$stmt.type_name()`', stmt.pos).emit()
 		}

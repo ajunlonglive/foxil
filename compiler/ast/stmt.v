@@ -5,7 +5,7 @@ module ast
 
 import compiler.token
 
-type Stmt = AssignStmt | EmptyStmt | ExprStmt | FuncDecl
+type Stmt = AssignStmt | EmptyStmt | ExprStmt | FuncDecl | LabelStmt
 
 pub struct EmptyStmt {
 pub:
@@ -20,6 +20,7 @@ pub mut:
 	use_c_varargs bool
 	is_extern     bool
 	stmts         []Stmt
+	labels        []string
 pub:
 	pos token.Position
 }
@@ -30,6 +31,12 @@ pub mut:
 	right Expr
 pub:
 	pos token.Position
+}
+
+pub struct LabelStmt {
+pub:
+	name string
+	pos  token.Position
 }
 
 pub struct ExprStmt {

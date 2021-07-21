@@ -173,6 +173,10 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 			g.expr(stmt.right)
 			g.writeln(';')
 		}
+		ast.LabelStmt {
+			// NB: we use `source` to avoid indentation
+			g.source.writeln('$stmt.name:')
+		}
 		ast.ExprStmt {
 			g.expr(stmt.expr)
 			g.writeln(';')

@@ -10,14 +10,13 @@ import compiler.token
 
 pub struct Parser {
 mut:
-	scanner      Scanner
-	prev_tok     token.Token
-	tok          token.Token
-	peek_tok     token.Token
-	in_decl_def  bool
-	inside_bucle bool
-	scope        &ast.Scope
-	sf           &ast.SourceFile = 0
+	sf       &ast.SourceFile = 0
+	scanner  Scanner
+	prev_tok token.Token
+	tok      token.Token
+	peek_tok token.Token
+	scope    &ast.Scope
+	labels   []string
 }
 
 pub fn run_parser() {
@@ -414,7 +413,11 @@ fn (mut p Parser) parse_func_declaration() ast.Stmt {
 		use_c_varargs: use_c_varargs
 		ret_typ: typ
 		is_extern: is_extern
+		labels: p.labels
 		pos: pos
+	}
+	if p.labels.len > 0 {
+		p.labels.clear()
 	}
 	sym.node = node
 	g_context.root.add(sym.name, sym)
@@ -440,8 +443,22 @@ fn (mut p Parser) parse_stmts() []ast.Stmt {
 	for p.tok.kind !in [.rbrace, .eof] {
 		match p.tok.kind {
 			.name {
-				expr := p.parse_instruction()
-				stmts << ast.ExprStmt{expr, expr.pos}
+				if p.peek_tok.kind == .colon {
+					// labels
+					mut pos := p.tok.position()
+					label := p.parse_identifier()
+					pos = pos.extend(p.tok.position())
+					p.check(.colon)
+					if label in p.labels {
+						report.error('duplicate label `$label`', pos).emit()
+					} else {
+						p.labels << label
+					}
+					stmts << ast.LabelStmt{label, pos}
+				} else {
+					expr := p.parse_instruction()
+					stmts << ast.ExprStmt{expr, expr.pos}
+				}
 			}
 			.mod {
 				stmts << p.parse_assign()
