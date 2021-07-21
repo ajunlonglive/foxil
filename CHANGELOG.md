@@ -10,5 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * First release (We generate functional binaries :D!)
 
-[Unreleased]: https://github.com/StunxFS/foxil/compare/v0.1.0...HEAD
-[0.0.1]: https://github.com/StunxFS/foxil/releases/tag/v0.1.0
+[Unreleased]: https://github.com/StunxFS/foxil/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/StunxFS/foxil/releases/tag/0.1.0
