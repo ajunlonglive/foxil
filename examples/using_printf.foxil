@@ -3,6 +3,6 @@ extern func @printf(char*, ...) i32
 func @main() i32 {
     %cstr2 = cast [18 x char] "Current year: %d\n" as char*
     %value = alloca i32, i32 2000
-    %res = call i32 @printf(char* %cstr2, i32 %value)
-    ret i32 %res
+    call i32 @printf(char* %cstr2, i32 %value)
+    ret i32 0
 }
