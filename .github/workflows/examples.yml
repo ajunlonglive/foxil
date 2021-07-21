@@ -2,10 +2,10 @@ name: examples
 
 on:
   push:
-    paths: ['**.foxil']
+    paths: ['**.foxil', '**.v']
     branches: [main]
   pull_request:
-    paths: ['**.foxil']
+    paths: ['**.foxil', '**.v']
     types: [opened, synchronize]
 
 jobs:
