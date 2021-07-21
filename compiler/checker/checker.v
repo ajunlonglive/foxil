@@ -298,7 +298,7 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			}
 		}
 		// arithmetic operators
-		'add', 'sub', 'mul', 'div', 'mod' {
+		'add', 'sub', 'mul', 'div', 'mod', 'lshift', 'rshift', 'and', 'or', 'xor' {
 			t1 := c.expr(&instr.args[0])
 			t2 := c.expr(&instr.args[1])
 			if t1.is_number() {

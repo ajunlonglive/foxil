@@ -132,7 +132,7 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 		}
 		// arithmetic operators
-		'add', 'sub', 'mul', 'div', 'mod' {
+		'add', 'sub', 'mul', 'div', 'mod', 'lshift', 'rshift', 'and', 'or', 'xor' {
 			g.expr(instr.args[0])
 			match instr.name {
 				'add' { g.write(' + ') }
@@ -140,6 +140,11 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 				'mul' { g.write(' * ') }
 				'div' { g.write(' / ') }
 				'mod' { g.write(' % ') }
+				'lshift' { g.write(' << ') }
+				'rshift' { g.write(' >> ') }
+				'and' { g.write(' & ') }
+				'or' { g.write(' | ') }
+				'xor' { g.write(' ^ ') }
 				else {}
 			}
 			g.expr(instr.args[1])

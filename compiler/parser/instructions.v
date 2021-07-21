@@ -103,7 +103,7 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			instr.args << p.parse_literal()
 		}
 		// arithmetic operators
-		'add', 'sub', 'mul', 'div', 'mod' {
+		'add', 'sub', 'mul', 'div', 'mod', 'lshift', 'rshift', 'and', 'or', 'xor' {
 			instr.args << p.parse_literal()
 			p.check(.comma)
 			instr.args << p.parse_literal()
