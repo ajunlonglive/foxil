@@ -48,9 +48,7 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 		}
 		ast.AssignStmt {
 			t := c.expr(&stmt.right)
-			if stmt.right is ast.InstrExpr && (stmt.right as ast.InstrExpr).name == 'ret' {
-				report.error('instruction `ret` cannot be used as an expression', stmt.pos).emit()
-			} else if t.is_void() {
+			if t.is_void() {
 				report.error('this instruction does not return a value', stmt.right.pos).emit()
 			}
 			stmt.left.typ = t
@@ -298,7 +296,6 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			c.check_types(instr.typ, c.cur_fn.ret_typ) or {
 				report.error('$err.msg, in return argument', instr.args[0].pos).emit()
 			}
-			return instr.typ
 		}
 		else {
 			report.error('checker: unsupported instruction: `$instr.name`', instr.pos).emit()
