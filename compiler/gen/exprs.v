@@ -125,6 +125,15 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 			g.expr(instr.args[2])
 		}
+		'getelement' {
+			if instr.typ.is_ptr() {
+				g.write('&')
+			}
+			g.expr(instr.args[1])
+			g.write('[')
+			g.expr(instr.args[2])
+			g.write(']')
+		}
 		'load' {
 			if instr.typ.is_ptr() || instr.typ.is_rawptr() {
 				g.write('*')

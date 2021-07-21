@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 * Merge the `goto` instruction with `br` instruction.
+* Added `getelement` instruction, to access elements of arrays (soon also for fields of structs).
 
 ## [0.1.0] - 2021-07-21
 

@@ -102,10 +102,21 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			p.check(.comma)
 			instr.args << p.parse_literal()
 		}
-		'load' {
+		'getelement' {
+			// getelement [ptr] <ARRAY>, <INDEX>
+			mut is_ptr := false
+			if p.tok.lit == 'ptr' {
+				is_ptr = true
+				p.next()
+			}
+			instr.args << ast.BoolLiteral{
+				lit: is_ptr
+			}
+			instr.args << p.parse_literal()
+			p.check(.comma)
 			instr.args << p.parse_literal()
 		}
-		'ret' {
+		'load', 'ret' {
 			instr.args << p.parse_literal()
 		}
 		'store' {

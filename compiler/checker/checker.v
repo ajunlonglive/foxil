@@ -297,6 +297,23 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			instr.typ = ast.bool_type
 			return instr.typ
 		}
+		'getelement' {
+			is_ptr := (instr.args[0] as ast.BoolLiteral).lit
+			t := c.expr(&instr.args[1])
+			ts := g_context.get_type_symbol(t)
+			if ts.kind != .array {
+				report.error('expected an array', instr.args[1].pos).emit()
+			} else {
+				if !c.expr(&instr.args[2]).is_number() {
+					report.error('expected an numeric index', instr.args[2].pos).emit()
+				} else {
+					instr.typ = (ts.info as ast.ArrayInfo).elem_type
+				}
+			}
+			nt := if is_ptr { instr.typ.to_ptr() } else { instr.typ }
+			instr.typ = nt
+			return nt
+		}
 		'load' {
 			t := c.expr(&instr.args[0])
 			instr.typ = t
