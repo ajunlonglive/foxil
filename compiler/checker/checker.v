@@ -7,8 +7,8 @@ import compiler.ast
 
 pub struct Checker {
 mut:
-	cur_fn_ret_typ ast.Type
-	expecting_typ  bool
+	cur_fn        &ast.FuncDecl = 0
+	expecting_typ bool
 }
 
 pub fn run_checker() {
@@ -31,8 +31,8 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 				arg.typ = c.typ(arg.typ)
 			}
 			stmt.ret_typ = c.typ(stmt.ret_typ)
-			c.cur_fn_ret_typ = stmt.ret_typ
 			mut has_return := false
+			c.cur_fn = unsafe { &stmt }
 			for mut dd_stmt in stmt.stmts {
 				if !stmt.is_extern && mut dd_stmt is ast.ExprStmt {
 					if dd_stmt.expr is ast.InstrExpr
@@ -273,9 +273,15 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			instr.typ = ast.bool_type
 			return instr.typ
 		}
+		'goto' {
+			label := (instr.args[0] as ast.Symbol)
+			if label.name !in c.cur_fn.labels {
+				report.error('label `$label.name` not found', label.pos).emit()
+			}
+		}
 		'ret' {
 			instr.typ = c.expr(&instr.args[0])
-			c.check_types(instr.typ, c.cur_fn_ret_typ) or {
+			c.check_types(instr.typ, c.cur_fn.ret_typ) or {
 				report.error('$err.msg, in return argument', instr.args[0].pos).emit()
 			}
 			return instr.typ

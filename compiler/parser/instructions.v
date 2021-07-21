@@ -74,6 +74,14 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			p.check(.comma)
 			instr.args << p.parse_literal()
 		}
+		'goto' {
+			lpos := p.tok.position()
+			label := p.parse_identifier()
+			instr.args << ast.Symbol{
+				name: label
+				pos: lpos
+			}
+		}
 		'ret' {
 			instr.args << p.parse_literal()
 		}

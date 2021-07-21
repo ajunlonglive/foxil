@@ -112,6 +112,10 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 			g.expr(instr.args[2])
 		}
+		'goto' {
+			label := (instr.args[0] as ast.Symbol).name
+			g.write('goto $label')
+		}
 		'ret' {
 			g.write('return')
 			if !instr.typ.is_void() {
