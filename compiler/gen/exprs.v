@@ -131,6 +131,19 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 				g.expr(instr.args[0])
 			}
 		}
+		// arithmetic operators
+		'add', 'sub', 'mul', 'div', 'mod' {
+			g.expr(instr.args[0])
+			match instr.name {
+				'add' { g.write(' + ') }
+				'sub' { g.write(' - ') }
+				'mul' { g.write(' * ') }
+				'div' { g.write(' / ') }
+				'mod' { g.write(' % ') }
+				else {}
+			}
+			g.expr(instr.args[1])
+		}
 		else {
 			g.write('/* TODO: implement instruction: $instr.name */')
 		}

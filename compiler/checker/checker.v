@@ -297,6 +297,21 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 				report.error('$err.msg, in return argument', instr.args[0].pos).emit()
 			}
 		}
+		// arithmetic operators
+		'add', 'sub', 'mul', 'div', 'mod' {
+			t1 := c.expr(&instr.args[0])
+			t2 := c.expr(&instr.args[1])
+			if t1.is_number() {
+				c.check_types(t2, t1) or {
+					report.error('$err.msg, in the second operand of the `$instr.name` instruction',
+						instr.pos).emit()
+				}
+			} else {
+				report.error('expected a numeric expression', instr.args[0].pos).emit()
+			}
+			instr.typ = t1
+			return t1
+		}
 		else {
 			report.error('checker: unsupported instruction: `$instr.name`', instr.pos).emit()
 		}

@@ -82,7 +82,7 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			cond_pos := p.tok.position()
 			cond := p.parse_identifier()
 			if cond !in ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] {
-				report.error('invalid condition code', cond_pos).emit()
+				report.error('invalid condition: `$cond`', cond_pos).emit()
 			}
 			instr.args << ast.Symbol{
 				name: cond
@@ -100,6 +100,12 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			}
 		}
 		'ret' {
+			instr.args << p.parse_literal()
+		}
+		// arithmetic operators
+		'add', 'sub', 'mul', 'div', 'mod' {
+			instr.args << p.parse_literal()
+			p.check(.comma)
 			instr.args << p.parse_literal()
 		}
 		else {
