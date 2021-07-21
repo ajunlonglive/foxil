@@ -54,6 +54,14 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 				g.write_default_value(instr.typ)
 			}
 		}
+		'br' {
+			g.write('if (')
+			g.expr(instr.args[0])
+			g.write(') goto ')
+			g.write((instr.args[1] as ast.Symbol).name)
+			g.write('; else goto ')
+			g.write((instr.args[2] as ast.Symbol).name)
+		}
 		'cast' {
 			ts := g_context.get_type_symbol(instr.typ)
 			e := instr.args[0]

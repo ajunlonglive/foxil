@@ -174,8 +174,7 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 			g.writeln(';')
 		}
 		ast.LabelStmt {
-			// NB: we use `source` to avoid indentation
-			g.source.writeln('$stmt.name:')
+			g.writeln('/*label*/ $stmt.name: {}')
 		}
 		ast.ExprStmt {
 			g.expr(stmt.expr)
