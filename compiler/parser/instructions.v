@@ -108,6 +108,9 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			p.check(.comma)
 			instr.args << p.parse_literal()
 		}
+		'neg' {
+			instr.args << p.parse_literal()
+		}
 		else {
 			report.error('unknown instruction: `$name`', pos).emit()
 		}

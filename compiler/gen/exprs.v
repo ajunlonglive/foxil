@@ -149,6 +149,10 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 			g.expr(instr.args[1])
 		}
+		'neg' {
+			g.write('-')
+			g.expr(instr.args[0])
+		}
 		else {
 			g.write('/* TODO: implement instruction: $instr.name */')
 		}

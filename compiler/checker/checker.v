@@ -312,6 +312,14 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			instr.typ = t1
 			return t1
 		}
+		'neg' {
+			t := c.expr(&instr.args[0])
+			if !t.is_number() {
+				report.error('expected a numeric expression', instr.args[0].pos).emit()
+			}
+			instr.typ = t
+			return t
+		}
 		else {
 			report.error('checker: unsupported instruction: `$instr.name`', instr.pos).emit()
 		}
