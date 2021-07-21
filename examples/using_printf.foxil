@@ -5,5 +5,5 @@ func @main() i32 {
     %cstr2 = cast [18 x char] %str2 as char*
     %value = alloca i32, i32 2000
     %res = call i32 @printf(char* %cstr2, i32 %value)
-    ret i32 0
+    ret i32 %res
 }

@@ -25,7 +25,7 @@ possibly also x86 assembly code.
 ```c
 extern int puts(char*);
 
-int main() {
+int main(int argc, char** argv) {
     puts("Hello World!");
     return 0;
 }
