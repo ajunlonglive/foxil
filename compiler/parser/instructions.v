@@ -99,7 +99,15 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 				pos: lpos
 			}
 		}
+		'load' {
+			instr.args << p.parse_literal()
+		}
 		'ret' {
+			instr.args << p.parse_literal()
+		}
+		'store' {
+			instr.args << p.parse_literal()
+			p.check(.comma)
 			instr.args << p.parse_literal()
 		}
 		// arithmetic operators

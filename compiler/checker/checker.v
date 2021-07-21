@@ -291,11 +291,21 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 				report.error('label `$label.name` not found', label.pos).emit()
 			}
 		}
+		'load' {
+			t := c.expr(&instr.args[0])
+			instr.typ = t
+			return t
+		}
 		'ret' {
 			instr.typ = c.expr(&instr.args[0])
 			c.check_types(instr.typ, c.cur_fn.ret_typ) or {
 				report.error('$err.msg, in return argument', instr.args[0].pos).emit()
 			}
+		}
+		'store' {
+			val := c.expr(&instr.args[0])
+			dest := c.expr(&instr.args[1])
+			c.check_types(val, dest) or { report.error(err.msg, instr.args[0].pos).emit() }
 		}
 		// arithmetic operators
 		'add', 'sub', 'mul', 'div', 'mod', 'lshift', 'rshift', 'and', 'or', 'xor' {

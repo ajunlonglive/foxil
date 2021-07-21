@@ -124,12 +124,31 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			label := (instr.args[0] as ast.Symbol).name
 			g.write('goto $label')
 		}
+		'load' {
+			if instr.typ.is_ptr() || instr.typ.is_rawptr() {
+				g.write('*')
+			}
+			g.expr(instr.args[0])
+		}
 		'ret' {
 			g.write('return')
 			if !instr.typ.is_void() {
 				g.write(' ')
 				g.expr(instr.args[0])
 			}
+		}
+		'store' {
+			mut req_parens := false
+			if (instr.args[1] as ast.Symbol).typ.is_ptr() {
+				req_parens = true
+				g.write('(*')
+			}
+			g.expr(instr.args[1])
+			if req_parens {
+				g.write(')')
+			}
+			g.write(' = ')
+			g.expr(instr.args[0])
 		}
 		// arithmetic operators
 		'add', 'sub', 'mul', 'div', 'mod', 'lshift', 'rshift', 'and', 'or', 'xor' {
