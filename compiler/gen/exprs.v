@@ -58,7 +58,7 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			ts := g_context.get_type_symbol(instr.typ)
 			e := instr.args[0]
 			// arrays are already pointers :)
-			if ts.kind == .array && instr.typ.is_ptr() {
+			if (ts.kind == .array || e is ast.StringLiteral) && instr.typ.is_ptr() {
 				g.expr(e)
 			} else {
 				g.write('((${g.typ(instr.typ)})')
