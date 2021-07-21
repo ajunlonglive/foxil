@@ -1,0 +1,23 @@
+extern func @printf(char*, ...) i32
+
+func @main() i32 {
+    %age = alloca i32, i32 18
+    
+    %.str = cast [9 x char] "Age: %d\n" as char*
+    call i32 @printf(char* %.str, i32 %age)
+    
+    %is.greater.than.18 = cmp ge i32 %age, i32 18
+    br bool %is.greater.than.18, is, not_is
+
+is:
+    %.str.2 = cast [25 x char] "is greater than 18 ages\n" as char*
+    call i32 @printf(char* %.str.2, i32 %age)
+    goto end
+
+not_is:
+    %.str.3 = cast [29 x char] "is not greater than 18 ages\n" as char*
+    call i32 @printf(char* %.str.3, i32 %age)
+
+end:
+    ret i32 0
+}
