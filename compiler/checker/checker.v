@@ -226,10 +226,15 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		'alloca' {
 			instr.typ = c.typ((instr.args[0] as ast.TypeNode).typ)
 			if instr.args.len > 1 {
-				expr_t := c.expr(&instr.args[1])
-				c.check_types(expr_t, instr.typ) or {
-					report.error('$err.msg, in initial value of `alloca` instruction',
+				if instr.args[1] is ast.Symbol {
+					report.error('`alloca` cannot assign values ​​from other symbols, use the `load` instruction instead',
 						instr.args[1].pos).emit()
+				} else {
+					expr_t := c.expr(&instr.args[1])
+					c.check_types(expr_t, instr.typ) or {
+						report.error('$err.msg, in initial value of `alloca` instruction',
+							instr.args[1].pos).emit()
+					}
 				}
 			}
 			return instr.typ
