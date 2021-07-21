@@ -7,7 +7,7 @@ import os
 import compiler.ast
 import compiler.util
 
-pub const version = '0.1.0-alpha'
+pub const version = '0.1.0'
 
 __global (
 	g_context Context // the current compiler context
