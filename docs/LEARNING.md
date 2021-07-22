@@ -33,10 +33,8 @@ Names in Foxil must always begin with a prefix, carry
 alphanumeric letters, and can optionally contain `.` and `::`:
 
 ```llvm
-; @ -> prefix used for global scope (such as functions, types,
-constants and variables, etc.)
-; % -> prefix used for local scope (as arguments and local
-variables)
+; @ -> prefix used for global scope (such as functions, types, constants and variables, etc.)
+; % -> prefix used for local scope (as arguments and local variables)
 
 @my::func::name ; valid name
 @my.func.name.23 ; valid name
@@ -64,7 +62,7 @@ return type, and a series of statements between braces.
 The arguments are defined as follows:
 
 ```
-; <Type> <NAME> -> i32 %my.arg
+<Type> <NAME> -> i32 %my.arg
 ```
 
 Example of a function:
@@ -118,4 +116,23 @@ char 'A'
 ; to use variables, we use literal syntax
 %var = alloca i32, i32 100
 %var2 = load i32 %var
+
+; array literal
+[5 x i32] [i32 1, i32 2, i32 3, i32 4, i32 5]
+```
+
+## Labels
+
+Labels allow you to jump to a certain part of your code by using the `br` statement.
+
+```llvm
+first_label:
+    %rt = alloca i32, i32 4
+    br end
+
+second_label:
+    br first_label
+
+end:
+    ret i32 0
 ```
