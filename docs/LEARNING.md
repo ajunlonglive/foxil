@@ -123,7 +123,7 @@ char 'A'
 
 ## Labels
 
-Labels allow you to jump to a certain part of your code by using the `br` statement.
+Labels allow you to jump to a certain part of your code by using the `br` instruction.
 
 ```llvm
 first_label:
