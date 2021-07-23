@@ -258,10 +258,9 @@ fn (mut g Gen) typ(typ ast.Type) string {
 		}
 	} else if ts.kind == .alias {
 		if idx !in g.types {
-			parent_typ := (ts.info as ast.AliasInfo).parent
-			g.typ(parent_typ)
-			parent := g_context.get_type_symbol(parent_typ)
-			g.typedefs.writeln('typedef struct ${cname(parent.gname)} ${cname(ts.gname)};')
+			// we generate the parent of the alias first (if it is not already generated)
+			name := cname(g.typ((ts.info as ast.AliasInfo).parent))
+			g.typedefs.writeln('typedef struct $name ${cname(ts.gname)};')
 			g.types << idx
 		}
 	}
