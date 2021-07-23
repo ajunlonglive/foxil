@@ -1,0 +1,17 @@
+@AliasToUnknown = type @Unknown
+@AliasToSelf = type @AliasToSelf
+
+@FastAlias = type { i32 %keep }
+
+@Zero = type {}
+
+func @main() void {
+    %q = alloca { i32 %f, bool %f2 }, { i32 %f, bool %f2 } { i32 5, bool true, char 'A' }
+    %q2 = alloca { bool %f2 }, { bool %f2 } { i32 5, bool true, char 'A' }
+    
+    %f = alloca @FastAlias, @FastAlias { i32 4 }
+    %f2 = alloca @FastAlias, @FastAlias { }
+    
+    %z = alloca @Zero, @Zero {i32 0}
+    ret void
+}
