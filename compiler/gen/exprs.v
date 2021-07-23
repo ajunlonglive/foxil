@@ -210,14 +210,13 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 			g.write('0.0')
 		}
 		ast.rawptr_type {
-			// TODO: this should not be NULL (in the future, we should
-			// create pointers to values ​​by default)
 			g.write('NULL')
 		}
 		else {
 			if typ.is_ptr() {
-				g.write('((${g.typ(typ.deref())}[]){')
-				g.write_default_value(typ.deref())
+				tderef := typ.deref()
+				g.write('((${g.typ(tderef)}[]){')
+				g.write_default_value(tderef)
 				g.write('})')
 			} else {
 				ts := g_context.get_type_symbol(typ)

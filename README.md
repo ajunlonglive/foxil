@@ -2,7 +2,7 @@
 
 # The Foxil intermediate language 
 
-Easy and safe
+Fast and light
 
 </div>
 
@@ -17,8 +17,8 @@ possibly also x86 assembly code.
 ## Features
 
 * Simple and easy to read syntax
-* Built-in functions
-* Undefined values ​​are not allowed
+* Non-null values
+* Fast and light
 
 ## Examples
 

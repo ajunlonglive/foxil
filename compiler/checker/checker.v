@@ -9,6 +9,7 @@ pub struct Checker {
 mut:
 	cur_fn        &ast.FuncDecl = 0
 	expecting_typ bool
+	store_instr   bool
 }
 
 pub fn run_checker() {
@@ -51,6 +52,16 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 			if t.is_void() {
 				report.error('this instruction does not return a value', stmt.right.pos).emit()
 			}
+			stmt.left.typ = t
+			mut nsym := stmt.left.scope.lookup(stmt.left.name) or {
+				// we update the type of the object in the scope
+				// this must never fail
+				&ast.Symbol{}
+			}
+			nsym.typ = t
+		}
+		ast.GlobalAssignStmt {
+			t := c.expr(&stmt.expr)
 			stmt.left.typ = t
 			mut nsym := stmt.left.scope.lookup(stmt.left.name) or {
 				// we update the type of the object in the scope
@@ -158,8 +169,10 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 					expr.kind = nsym.kind
 					expr.typ = nsym.typ
 					expr.unresolved = false
-					return nsym.typ
 				}
+			}
+			if c.store_instr && expr.kind == .constant {
+				report.error('`$expr.name` is constant, its value cannot change', expr.pos).emit()
 			}
 			return expr.typ
 		}
@@ -329,12 +342,15 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			}
 		}
 		'store' {
-			val := c.expr(&instr.args[0])
 			if instr.args[1] !is ast.Symbol {
 				report.error('`store` only works with symbols', instr.args[1].pos).emit()
+			} else {
+				val := c.expr(&instr.args[0])
+				c.store_instr = true
+				dest := c.expr(&instr.args[1])
+				c.store_instr = false
+				c.check_types(val, dest) or { report.error(err.msg, instr.args[0].pos).emit() }
 			}
-			dest := c.expr(&instr.args[1])
-			c.check_types(val, dest) or { report.error(err.msg, instr.args[0].pos).emit() }
 		}
 		// arithmetic operators
 		'add', 'sub', 'mul', 'div', 'mod', 'lshift', 'rshift', 'and', 'or', 'xor' {

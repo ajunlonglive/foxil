@@ -336,7 +336,7 @@ fn (mut p Parser) parse_declarations() []ast.Stmt {
 				stmts << p.parse_func_declaration()
 			}
 			.at {
-				stmts << p.parse_assign() // TODO: p.parse_global_assign()
+				stmts << p.parse_global_assign()
 			}
 			else {
 				report.error('expecting declaration, not $p.tok', p.tok.position()).emit_and_exit()
@@ -434,6 +434,40 @@ fn (mut p Parser) parse_assign() ast.Stmt {
 	return ast.AssignStmt{
 		left: left
 		right: right
+		pos: pos
+	}
+}
+
+fn (mut p Parser) parse_global_assign() ast.Stmt {
+	mut pos := p.tok.position()
+	mut left := p.parse_symbol()
+	mut kind := ast.GlobalAssignKind.default
+	mut expr := p.empty_expr()
+
+	p.check(.assign)
+	instr_pos := p.tok.position()
+	instr := p.tok.lit
+	p.next()
+	match instr {
+		'const' {
+			kind = .const_
+			expr = p.parse_literal()
+			left.kind = .constant
+		}
+		'type' {
+			kind = .type_
+			left.kind = .type_
+		}
+		else {
+			report.error('invalid instruction for global symbols', instr_pos).emit()
+		}
+	}
+	pos = pos.extend(p.prev_tok.position())
+	p.scope.add_obj(left)
+	return ast.GlobalAssignStmt{
+		left: left
+		expr: expr
+		kind: kind
 		pos: pos
 	}
 }

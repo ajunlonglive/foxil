@@ -5,7 +5,7 @@ module ast
 
 import compiler.token
 
-type Stmt = AssignStmt | EmptyStmt | ExprStmt | FuncDecl | LabelStmt
+type Stmt = AssignStmt | EmptyStmt | ExprStmt | FuncDecl | GlobalAssignStmt | LabelStmt
 
 pub struct EmptyStmt {
 pub:
@@ -21,6 +21,21 @@ pub mut:
 	is_extern     bool
 	stmts         []Stmt
 	labels        []string
+pub:
+	pos token.Position
+}
+
+pub enum GlobalAssignKind {
+	default
+	type_
+	const_
+}
+
+pub struct GlobalAssignStmt {
+pub mut:
+	left Symbol
+	expr Expr
+	kind GlobalAssignKind
 pub:
 	pos token.Position
 }

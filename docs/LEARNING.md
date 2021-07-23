@@ -45,6 +45,26 @@ alphanumeric letters, and can optionally contain `.` and `::`:
 %::tmp.2 ; valid name
 ```
 
+## Constants
+
+Constants are global symbols, the value of which cannot be changed.
+They are declared in the global scope and cannot be declared within
+functions.
+
+Example:
+
+```llvm
+@age = const i32 2021
+
+extern func @printf(char*, ...) i32
+
+func @main() void {
+    %msg = cast [17 x char] "Current age: %d\n" as char*
+    call i32 @printf(char* %msg, i32 @age)
+    ret void
+}
+```
+
 ## Functions
 
 As in any other language, the syntax for declaring a function

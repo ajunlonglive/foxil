@@ -6,9 +6,9 @@ module ast
 import compiler.token
 
 pub enum SymbolKind {
-	native // native types/functions/etc...
 	variable
 	constant
+	type_
 	function
 }
 
