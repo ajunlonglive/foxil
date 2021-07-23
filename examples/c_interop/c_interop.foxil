@@ -14,16 +14,16 @@ func @main() void {
 ;     int age;
 ; };
 ;
-; void SimpleStruct__show_name(struct SimpleStruct this) {
-;     printf("SimpleStruct.age: %d\n", this->age);
+; void SimpleStruct__show_age(struct SimpleStruct this) {
+;     printf("SimpleStruct.age: %d\n", this.age);
 ; }
 
 @SimpleStruct = type { i32 %age }
 
-extern func @SimpleStruct::show_name(@SimpleStruct) void
+extern func @SimpleStruct::show_age(@SimpleStruct) void
 
 func @c_interop() void {
     %ss = alloca @SimpleStruct, @SimpleStruct { i32 2004 }
-    call void @SimpleStruct::show_name(@SimpleStruct %ss)
+    call void @SimpleStruct::show_age(@SimpleStruct %ss)
     ret void
 }
