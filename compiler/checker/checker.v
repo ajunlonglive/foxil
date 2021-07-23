@@ -316,8 +316,11 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		}
 		'load' {
 			t := c.expr(&instr.args[0])
+			if instr.args[0] !is ast.Symbol {
+				report.error('`load` only works with symbols', instr.args[0].pos).emit()
+			}
 			instr.typ = t
-			return t
+			return if t.is_ptr() { t.deref() } else { t }
 		}
 		'ret' {
 			instr.typ = c.expr(&instr.args[0])
@@ -327,6 +330,9 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		}
 		'store' {
 			val := c.expr(&instr.args[0])
+			if instr.args[1] !is ast.Symbol {
+				report.error('`store` only works with symbols', instr.args[1].pos).emit()
+			}
 			dest := c.expr(&instr.args[1])
 			c.check_types(val, dest) or { report.error(err.msg, instr.args[0].pos).emit() }
 		}
