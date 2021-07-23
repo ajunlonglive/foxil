@@ -298,7 +298,7 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			return instr.typ
 		}
 		'getelement' {
-			is_ptr := (instr.args[0] as ast.BoolLiteral).lit
+			is_ref := (instr.args[0] as ast.BoolLiteral).lit
 			t := c.expr(&instr.args[1])
 			ts := g_context.get_type_symbol(t)
 			if ts.kind != .array {
@@ -310,7 +310,7 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 					instr.typ = (ts.info as ast.ArrayInfo).elem_type
 				}
 			}
-			nt := if is_ptr { instr.typ.to_ptr() } else { instr.typ }
+			nt := if is_ref { instr.typ.to_ptr() } else { instr.typ }
 			instr.typ = nt
 			return nt
 		}

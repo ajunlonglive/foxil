@@ -103,14 +103,14 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			instr.args << p.parse_literal()
 		}
 		'getelement' {
-			// getelement [ptr] <ARRAY>, <INDEX>
-			mut is_ptr := false
-			if p.tok.lit == 'ptr' {
-				is_ptr = true
+			// getelement [ref] <ARRAY>, <INDEX>
+			mut is_ref := false
+			if p.tok.lit == 'ref' {
+				is_ref = true
 				p.next()
 			}
 			instr.args << ast.BoolLiteral{
-				lit: is_ptr
+				lit: is_ref
 			}
 			instr.args << p.parse_literal()
 			p.check(.comma)

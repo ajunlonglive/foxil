@@ -108,6 +108,15 @@ br bool %r, equal, not_equal
 
 * * *
 
+<!--
+TODO: 'getelement', 'load', 'store',
+'add', 'sub', 'mul', 'div', 'mod',
+'lshift', 'rshift', 'and', 'or',
+'xor', neg
+-->
+
+* * *
+
 ## ret
 `ret` makes the function return the argument that the instruction receives.
 If the function returns `void`, then` ret void` should be used.
