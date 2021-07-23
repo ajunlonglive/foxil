@@ -117,18 +117,23 @@ pub fn run_gen() {
 	os.write_file(gen.fx_runtime_h, g.header.str()) or { compiler.foxil_error(err.msg) }
 	if !g_context.compile_only {
 		for sf in g_context.source_files {
+			if g_context.verbose {
+				println('> creating object file for `$sf.path`')
+			}
 			fname := os.file_name(sf.path)
 			c_file := '${fname}.c'
 			obj_file := '${fname}.o'
 			res := os.execute('$g_context.cc $g.opt -o $obj_file -c $c_file')
 			if res.exit_code != 0 {
 				compiler.foxil_error('an error occurred while creating the object code for `$sf.path`:\n$res.output')
-			} else {
-				g_context.objects << obj_file
-				g_context.files_to_delete << c_file
 			}
+			g_context.objects << obj_file
+			g_context.files_to_delete << c_file
 		}
 		if !g_context.compile_and_assemble {
+			if g_context.verbose {
+				println('> building binary `$g_context.output`')
+			}
 			list := g_context.objects.join(' ')
 			user_list := g_context.user_objects.join(' ')
 			res := os.execute('$g_context.cc -o $g_context.output $list $user_list')
@@ -145,6 +150,9 @@ fn (mut g Gen) gen_file(sf &ast.SourceFile) {
 	g.source.writeln(gen.header)
 	g.source.writeln('#include "$gen.fx_runtime_h"\n')
 	g.stmts(sf.nodes)
+	if g_context.verbose {
+		println('> creating C source file for `$sf.path`')
+	}
 	os.write_file('${os.file_name(sf.path)}.c', g.source.str()) or { compiler.foxil_error(err.msg) }
 }
 
