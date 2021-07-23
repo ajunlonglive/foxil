@@ -186,13 +186,6 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 
 fn (mut g Gen) typ(typ ast.Type) string {
 	ts := g_context.get_type_symbol(typ)
-	if ts.info is ast.ArrayInfo {
-		t_idx := typ.idx()
-		if t_idx !in g.arrays {
-			g.typedefs.writeln('typedef ${g.typ(ts.info.elem_type)}* $ts.gname;')
-			g.arrays << t_idx
-		}
-	}
 	return ts.gname + '*'.repeat(typ.nr_muls())
 }
 

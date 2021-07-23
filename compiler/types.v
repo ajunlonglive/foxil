@@ -119,6 +119,6 @@ pub fn (mut c Context) array_name(elem_type ast.Type, size int) string {
 [inline]
 pub fn (mut c Context) array_cname(elem_type ast.Type, size int) string {
 	elem_type_gname := c.get_type_gname(elem_type)
-	ptr := if elem_type.is_ptr() { '__ptr'.repeat(elem_type.nr_muls()) } else { '' }
-	return 'Array__$elem_type_gname${ptr}__$size'
+	ptr := if elem_type.is_ptr() { '*'.repeat(elem_type.nr_muls()) } else { '' }
+	return '$elem_type_gname*$ptr'
 }

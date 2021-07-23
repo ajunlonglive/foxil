@@ -215,18 +215,24 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 			g.write('NULL')
 		}
 		else {
-			ts := g_context.get_type_symbol(typ)
-			if ts.info is ast.ArrayInfo {
-				g.write('((${g.typ(ts.info.elem_type)}[$ts.info.size]){')
-				for i in 0 .. ts.info.size {
-					g.write_default_value(ts.info.elem_type)
-					if i != ts.info.size - 1 {
-						g.write(', ')
-					}
-				}
+			if typ.is_ptr() {
+				g.write('((${g.typ(typ.deref())}[]){')
+				g.write_default_value(typ.deref())
 				g.write('})')
+			} else {
+				ts := g_context.get_type_symbol(typ)
+				if ts.info is ast.ArrayInfo {
+					g.write('((${g.typ(ts.info.elem_type)}[$ts.info.size]){')
+					for i in 0 .. ts.info.size {
+						g.write_default_value(ts.info.elem_type)
+						if i != ts.info.size - 1 {
+							g.write(', ')
+						}
+					}
+					g.write('})')
+				}
+				// TODO: here go the structs
 			}
-			// TODO: here go the structs
 		}
 	}
 }
