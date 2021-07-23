@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 * **ADDED:** Documentation (`docs/` folder).
 * **ADDED:** Support for constants.
 * **ADDED:** Support for anonymous types.
+* **ADDED:** Support for alias.
 
 ## [0.1.0] - 2021-07-21
 

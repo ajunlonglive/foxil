@@ -78,7 +78,24 @@ func @make_account(char* %name, i32 %age) { char* %name, i32 %age } {
 }
 ```
 
-Too verbose, but Foxil was designed to be used by compilers :D.
+Too verbose, right? but for that there is a solution: aliases.
+
+## Aliases
+
+Aliases are names that we can give to an anonymous type or to an existing
+type.
+
+Using an alias for the above example things get better:
+
+```llvm
+@Account = type { char* %name, i32 %age }
+
+func @make_account(char* %name, i32 %age) @Account {
+    ret @Account { char* %name, i32 %age }
+}
+```
+
+Simpler to read.
 
 ## Functions
 

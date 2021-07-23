@@ -100,17 +100,14 @@ pub fn run_gen() {
 	if g.typedefs.len > 0 {
 		g.header.writeln('// typedefs')
 		g.header.writeln(g.typedefs.str())
-		g.header.writeln('')
 	}
 	if g.structs.len > 0 {
 		g.header.writeln('// structs')
 		g.header.writeln(g.structs.str())
-		g.header.writeln('')
 	}
 	if g.constants.len > 0 {
 		g.header.writeln('// constants')
 		g.header.writeln(g.constants.str())
-		g.header.writeln('')
 	}
 	g.header.writeln('// functions')
 	g.header.writeln(g.fns.str())
@@ -247,8 +244,8 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 
 fn (mut g Gen) typ(typ ast.Type) string {
 	ts := g_context.get_type_symbol(typ)
+	idx := typ.idx()
 	if ts.kind == .struct_ {
-		idx := typ.idx()
 		if idx !in g.types {
 			name := cname(ts.gname)
 			g.typedefs.writeln('typedef struct $name $name;')
@@ -256,7 +253,15 @@ fn (mut g Gen) typ(typ ast.Type) string {
 			for f in (ts.info as ast.StructInfo).fields {
 				g.structs.writeln('   ${g.typ(f.typ)} ${cname(f.gname)};')
 			}
-			g.structs.writeln('};')
+			g.structs.writeln('};\n')
+			g.types << idx
+		}
+	} else if ts.kind == .alias {
+		if idx !in g.types {
+			parent_typ := (ts.info as ast.AliasInfo).parent
+			g.typ(parent_typ)
+			parent := g_context.get_type_symbol(parent_typ)
+			g.typedefs.writeln('typedef struct ${cname(parent.gname)} ${cname(ts.gname)};')
 			g.types << idx
 		}
 	}

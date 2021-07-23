@@ -19,7 +19,7 @@ pub fn (t &TypeSymbol) str() string {
 	return t.name
 }
 
-type TypeInfo = ArrayInfo | StructInfo
+type TypeInfo = AliasInfo | ArrayInfo | StructInfo
 
 pub enum TypeKind {
 	void
@@ -39,6 +39,7 @@ pub enum TypeKind {
 	rawptr
 	array
 	struct_
+	alias
 }
 
 pub struct ArrayInfo {
@@ -51,4 +52,9 @@ pub:
 pub struct StructInfo {
 pub mut:
 	fields []&Symbol
+}
+
+pub struct AliasInfo {
+pub mut:
+	parent Type
 }

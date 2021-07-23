@@ -61,14 +61,21 @@ fn (mut c Checker) stmt(mut stmt ast.Stmt) {
 			nsym.typ = t
 		}
 		ast.GlobalAssignStmt {
-			t := c.expr(&stmt.expr)
-			stmt.left.typ = t
-			mut nsym := stmt.left.scope.lookup(stmt.left.name) or {
-				// we update the type of the object in the scope
-				// this must never fail
-				&ast.Symbol{}
+			if stmt.kind == .const_ {
+				t := c.expr(&stmt.expr)
+				stmt.left.typ = t
+				mut nsym := stmt.left.scope.lookup(stmt.left.name) or {
+					// we update the type of the object in the scope
+					// this must never fail
+					&ast.Symbol{}
+				}
+				nsym.typ = t
+			} else {
+				ts := g_context.get_type_symbol(c.expr(&stmt.expr))
+				if '@$ts.name' == stmt.left.name {
+					report.error('a type alias cannot refer to itself', stmt.pos).emit()
+				}
 			}
-			nsym.typ = t
 		}
 		ast.ExprStmt {
 			c.expr(&stmt.expr)
@@ -140,7 +147,7 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 		}
 		ast.StructLiteral {
 			t := c.typ(expr.typ)
-			mut ts := g_context.get_type_symbol(t)
+			mut ts := g_context.get_final_type_symbol(t)
 			if ts.kind != .struct_ {
 				report.error('$ts.name is not a type', expr.pos).emit()
 			} else {

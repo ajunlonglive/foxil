@@ -23,6 +23,15 @@ pub fn (mut c Context) install_native_types() {
 }
 
 [inline]
+pub fn (mut c Context) get_final_type_symbol(typ ast.Type) &ast.TypeSymbol {
+	mut ts := c.get_type_symbol(typ)
+	for ts.info is ast.AliasInfo {
+		ts = c.get_type_symbol((ts.info as ast.AliasInfo).parent)
+	}
+	return ts
+}
+
+[inline]
 pub fn (mut c Context) get_type_symbol(typ ast.Type) &ast.TypeSymbol {
 	idx := typ.idx()
 	if idx >= 0 {

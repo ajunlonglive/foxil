@@ -36,7 +36,7 @@ fn (mut g Gen) expr(expr ast.Expr) {
 			g.write('})')
 		}
 		ast.StructLiteral {
-			ts := g_context.get_type_symbol(expr.typ)
+			ts := g_context.get_final_type_symbol(expr.typ)
 			info := ts.info as ast.StructInfo
 			g.write('((${cname(ts.gname)}){')
 			for i, e in expr.exprs {
