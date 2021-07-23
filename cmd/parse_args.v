@@ -85,10 +85,10 @@ fn parse_args() {
 					objf := cmdline.option(current_args, arg, '')
 					if !os.exists(objf) {
 						compiler.foxil_error("object code file doesn't exist: `$objf`")
-					} else if objf in g_context.objects {
+					} else if objf in g_context.user_objects {
 						compiler.foxil_error('duplicate object: `$objf`')
 					}
-					g_context.objects << objf
+					g_context.user_objects << objf
 					i++
 				} else {
 					compiler.foxil_error('`$arg` requires a object file as argument')

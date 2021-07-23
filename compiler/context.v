@@ -41,6 +41,7 @@ pub mut:
 	unresolved_idxs          map[string]int
 	files_to_delete          []string
 	objects                  []string
+	user_objects             []string
 	source_files             []ast.SourceFile
 }
 

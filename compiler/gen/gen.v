@@ -130,7 +130,8 @@ pub fn run_gen() {
 		}
 		if !g_context.compile_and_assemble {
 			list := g_context.objects.join(' ')
-			res := os.execute('$g_context.cc -o $g_context.output $list')
+			user_list := g_context.user_objects.join(' ')
+			res := os.execute('$g_context.cc -o $g_context.output $list $user_list')
 			if res.exit_code != 0 {
 				compiler.foxil_error('an error occurred while creating the binary `$g_context.output`:\n$res.output')
 			}
