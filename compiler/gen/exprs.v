@@ -92,8 +92,8 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			g.write(')')
 		}
 		'cmp' {
-            arg1 := instr.args[1]
-            arg2 := instr.args[2]
+			arg1 := instr.args[1]
+			arg2 := instr.args[2]
 			g.expr(arg1)
 			cond := (instr.args[0] as ast.Symbol).name
 			/*
