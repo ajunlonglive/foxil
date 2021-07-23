@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 * **ADDED:** `getelement` instruction, to access elements of arrays.
 * **ADDED:** Documentation (`docs/` folder).
 * **ADDED:** Support for constants.
+* **ADDED:** Support for anonymous types.
 
 ## [0.1.0] - 2021-07-21
 
