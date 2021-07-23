@@ -57,16 +57,16 @@ fn cname(name string) string {
 
 struct Gen {
 mut:
-	constants   strings.Builder
 	typedefs    strings.Builder
 	structs     strings.Builder
+	constants   strings.Builder
 	fns         strings.Builder
 	header      strings.Builder
 	source      strings.Builder
 	opt         string
 	indent      int
 	empty_line  bool
-	arrays      []int
+	types       []int
 	to_constant bool
 }
 
@@ -97,11 +97,6 @@ pub fn run_gen() {
 // =================== END ====================
 ')
 
-	if g.constants.len > 0 {
-		g.header.writeln('// constants')
-		g.header.writeln(g.constants.str())
-		g.header.writeln('')
-	}
 	if g.typedefs.len > 0 {
 		g.header.writeln('// typedefs')
 		g.header.writeln(g.typedefs.str())
@@ -110,6 +105,11 @@ pub fn run_gen() {
 	if g.structs.len > 0 {
 		g.header.writeln('// structs')
 		g.header.writeln(g.structs.str())
+		g.header.writeln('')
+	}
+	if g.constants.len > 0 {
+		g.header.writeln('// constants')
+		g.header.writeln(g.constants.str())
 		g.header.writeln('')
 	}
 	g.header.writeln('// functions')
@@ -162,7 +162,7 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 			if stmt.is_extern {
 				g.fns.write_string('extern ')
 			}
-			header_fn := '${g.typ(stmt.ret_typ)} ${stmt.sym.gname}('
+			header_fn := '${g.typ(stmt.ret_typ)} ${cname(stmt.sym.gname)}('
 			g.fns.write_string(header_fn)
 			if !stmt.is_extern {
 				g.write(header_fn)
@@ -210,7 +210,7 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 		}
 		ast.AssignStmt {
 			sym := stmt.left
-			g.write('${g.typ(sym.typ)} $sym.gname')
+			g.write('${g.typ(sym.typ)} ${cname(sym.gname)}')
 			g.write(' = ')
 			g.expr(stmt.right)
 			g.writeln(';')
@@ -222,7 +222,7 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 					// `is_const` tells us if we should use `const` or `#define`
 					is_const := stmt.expr is ast.ArrayLiteral
 					g.write(if is_const { 'const ${g.typ(stmt.left.typ)} ' } else { '#define ' })
-					g.write(stmt.left.gname)
+					g.write(cname(stmt.left.gname))
 					g.write(if is_const { ' = ' } else { ' ' })
 					g.expr(stmt.expr)
 					g.writeln(if is_const { ';' } else { '' })
@@ -235,7 +235,7 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 			}
 		}
 		ast.LabelStmt {
-			g.writeln('/*label*/ $stmt.name: {}')
+			g.writeln('$stmt.name: {} /* label */')
 		}
 		ast.ExprStmt {
 			g.expr(stmt.expr)
@@ -247,6 +247,19 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 
 fn (mut g Gen) typ(typ ast.Type) string {
 	ts := g_context.get_type_symbol(typ)
+	if ts.kind == .struct_ {
+		idx := typ.idx()
+		if idx !in g.types {
+			name := cname(ts.gname)
+			g.typedefs.writeln('typedef struct $name $name;')
+			g.structs.writeln('struct $name {')
+			for f in (ts.info as ast.StructInfo).fields {
+				g.structs.writeln('   ${g.typ(f.typ)} ${cname(f.gname)};')
+			}
+			g.structs.writeln('};')
+			g.types << idx
+		}
+	}
 	return ts.gname + '*'.repeat(typ.nr_muls())
 }
 

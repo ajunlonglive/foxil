@@ -38,6 +38,7 @@ pub enum TypeKind {
 	f64
 	rawptr
 	array
+	struct_
 }
 
 pub struct ArrayInfo {
@@ -49,5 +50,5 @@ pub:
 
 pub struct StructInfo {
 pub mut:
-	fields []Type
+	fields []&Symbol
 }

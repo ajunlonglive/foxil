@@ -65,6 +65,21 @@ func @main() void {
 }
 ```
 
+## Anonymous types
+
+Anonymous types (`structs`, really) are aggregated without names, which
+can have fields.
+
+Example:
+
+```llvm
+func @make_account(char* %name, i32 %age) { char* %name, i32 %age } {
+    ret { char* %name, i32 %age } { char* %name, i32 %age }
+}
+```
+
+Too verbose, but Foxil was designed to be used by compilers :D.
+
 ## Functions
 
 As in any other language, the syntax for declaring a function

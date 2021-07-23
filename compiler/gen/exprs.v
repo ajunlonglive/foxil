@@ -23,13 +23,27 @@ fn (mut g Gen) expr(expr ast.Expr) {
 			g.write('"$expr.lit"')
 		}
 		ast.Symbol {
-			g.write(expr.gname)
+			g.write(cname(expr.gname))
 		}
 		ast.ArrayLiteral {
 			g.write('((${g.typ(expr.typ)}[]){')
 			for i, elem in expr.elems {
 				g.expr(elem)
 				if i != expr.elems.len - 1 {
+					g.write(', ')
+				}
+			}
+			g.write('})')
+		}
+		ast.StructLiteral {
+			ts := g_context.get_type_symbol(expr.typ)
+			info := ts.info as ast.StructInfo
+			g.write('((${cname(ts.gname)}){')
+			for i, e in expr.exprs {
+				name := info.fields[i].gname
+				g.write('.$name = ')
+				g.expr(e)
+				if i != expr.exprs.len - 1 {
 					g.write(', ')
 				}
 			}
@@ -229,8 +243,17 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 						}
 					}
 					g.write('})')
+				} else if ts.info is ast.StructInfo {
+					g.write('(($ts.gname){')
+					for i, f in ts.info.fields {
+						g.write('.$f.gname = ')
+						g.write_default_value(f.typ)
+						if i != ts.info.fields.len - 1 {
+							g.write(', ')
+						}
+					}
+					g.write('})')
 				}
-				// TODO: here go the structs
 			}
 		}
 	}

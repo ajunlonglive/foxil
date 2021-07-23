@@ -6,7 +6,7 @@ module ast
 import compiler.token
 
 pub type Expr = ArrayLiteral | BoolLiteral | CallExpr | CharLiteral | EmptyExpr | FloatLiteral |
-	InstrExpr | IntegerLiteral | StringLiteral | Symbol | TypeNode | VoidRet
+	InstrExpr | IntegerLiteral | StringLiteral | StructLiteral | Symbol | TypeNode | VoidRet
 
 pub struct EmptyExpr {
 pub:
@@ -55,6 +55,15 @@ pub struct StringLiteral {
 pub mut:
 	lit string
 	typ Type
+pub:
+	pos token.Position
+}
+
+pub struct StructLiteral {
+pub mut:
+	exprs []Expr
+	typ   Type
+pub:
 	pos token.Position
 }
 

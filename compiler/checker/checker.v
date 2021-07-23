@@ -138,6 +138,36 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 			expr.typ = elem_t
 			return t
 		}
+		ast.StructLiteral {
+			t := c.typ(expr.typ)
+			mut ts := g_context.get_type_symbol(t)
+			if ts.kind != .struct_ {
+				report.error('$ts.name is not a type', expr.pos).emit()
+			} else {
+				mut ts_fields := &(ts.info as ast.StructInfo).fields
+				tsfl := ts_fields.len
+				msg := '$tsfl expression(s) are expected, not $expr.exprs.len'
+				if tsfl < expr.exprs.len {
+					report.error('too few expressions to type ‘$ts.name’ ($msg)',
+						expr.pos).emit()
+				} else if tsfl > expr.exprs.len {
+					report.error('too many expressions to type ‘$ts.name’ ($msg)',
+						expr.pos).emit()
+				} else {
+					for i, e in expr.exprs {
+						et := c.expr(&e)
+						mut ef := unsafe { &ts_fields[i] }
+						at := unsafe { c.typ(ef.typ) }
+						c.check_types(at, et) or {
+							report.error('$err.msg, in field `$ef.name`', e.pos).emit()
+						}
+						ef.typ = at
+					}
+				}
+			}
+			expr.typ = t
+			return t
+		}
 		ast.VoidRet {
 			return ast.void_type
 		}
@@ -387,13 +417,25 @@ fn (mut c Checker) typ(typ ast.Type) ast.Type {
 		mut ts := g_context.get_type_symbol(typ)
 		if mut ts.info is ast.ArrayInfo {
 			ts.info.elem_type = c.typ(ts.info.elem_type)
+		} else {
+			c.check_struct(mut ts)
 		}
 		return typ
 	}
 	c.expecting_typ = true
 	t := c.expr(g_context.unresolved_types[typ.idx()]).derive(typ).clear_flag(.unresolved)
 	c.expecting_typ = false
+	mut ts := g_context.get_type_symbol(typ)
+	c.check_struct(mut ts)
 	return t
+}
+
+fn (mut c Checker) check_struct(mut ts ast.TypeSymbol) {
+	if mut ts.info is ast.StructInfo {
+		for mut f in ts.info.fields {
+			f.typ = c.typ(f.typ)
+		}
+	}
 }
 
 fn (mut c Checker) check_types(got ast.Type, expected ast.Type) ? {

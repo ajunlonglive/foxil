@@ -34,6 +34,7 @@ pub mut:
 	compile_only             bool
 	compile_and_assemble     bool
 	use_color                UseColor
+	anon_typ_idx             int
 	type_symbols             []ast.TypeSymbol
 	type_idxs                map[string]int
 	unresolved_types         []ast.Symbol

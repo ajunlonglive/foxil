@@ -220,6 +220,25 @@ fn (mut p Parser) parse_literal() ast.Expr {
 				pos: pos
 			}
 		}
+		.lbrace {
+			p.next()
+			mut exprs := []ast.Expr{}
+			if p.tok.kind != .rbrace {
+				for {
+					exprs << p.parse_literal()
+					if !p.accept(.comma) {
+						break
+					}
+				}
+			}
+			pos = pos.extend(p.tok.position())
+			p.check(.rbrace)
+			return ast.StructLiteral{
+				exprs: exprs
+				typ: typ
+				pos: pos
+			}
+		}
 		else {}
 	}
 	return p.empty_expr()
@@ -251,6 +270,25 @@ fn (mut p Parser) parse_type() ast.Type {
 				pos).emit()
 		}
 		return ast.Type(g_context.find_or_register_array(elem_typ, size))
+	} else if p.accept(.lbrace) {
+		// anonymous type: { i32 %field1, bool %field2 }
+		mut fields := []&ast.Symbol{}
+		if p.tok.kind != .rbrace {
+			for {
+				typ := p.parse_type()
+				if p.tok.kind == .at {
+					report.error('type fields must start with `%`', p.tok.position()).emit()
+				}
+				mut sym := p.parse_symbol()
+				sym.typ = typ
+				fields << sym
+				if !p.accept(.comma) {
+					break
+				}
+			}
+		}
+		p.check(.rbrace)
+		return ast.Type(g_context.find_or_register_struct_type(ast.StructInfo{fields}))
 	}
 	prefix := p.tok.kind
 	has_prefix := prefix in [.at, .mod]
@@ -463,7 +501,11 @@ fn (mut p Parser) parse_global_assign() ast.Stmt {
 		}
 	}
 	pos = pos.extend(p.prev_tok.position())
-	p.scope.add_obj(left)
+	if kind == .const_ {
+		g_context.root.add_obj(left)
+	} else {
+		g_context.root.add(left.name, left)
+	}
 	return ast.GlobalAssignStmt{
 		left: left
 		expr: expr

@@ -31,6 +31,16 @@ pub fn (e Expr) str() string {
 			}
 			return '$arr]'
 		}
+		StructLiteral {
+			mut lit := '{ '
+			for i, expr in e.exprs {
+				lit += expr.str()
+				if i != e.exprs.len - 1 {
+					lit += ', '
+				}
+			}
+			return '$lit }'
+		}
 		Symbol {
 			return e.str()
 		}

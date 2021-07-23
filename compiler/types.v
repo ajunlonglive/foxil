@@ -122,3 +122,30 @@ pub fn (mut c Context) array_cname(elem_type ast.Type, size int) string {
 	ptr := if elem_type.is_ptr() { '*'.repeat(elem_type.nr_muls()) } else { '' }
 	return '$elem_type_gname*$ptr'
 }
+
+pub fn (mut c Context) find_or_register_struct_type(s ast.StructInfo) int {
+	name := c.struct_name(s)
+	gname := 'anon_type_$c.anon_typ_idx'
+	existing_idx := c.type_idxs[name]
+	if existing_idx > 0 {
+		return existing_idx
+	}
+	c.anon_typ_idx++
+	return c.register_type_symbol(
+		kind: .struct_
+		name: name
+		gname: gname
+		info: s
+	)
+}
+
+pub fn (mut c Context) struct_name(s ast.StructInfo) string {
+	mut res := '{ '
+	for i, f in s.fields {
+		res += '${c.get_type_name(f.typ)}'
+		if i != s.fields.len - 1 {
+			res += ', '
+		}
+	}
+	return '$res }'
+}
