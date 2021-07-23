@@ -92,7 +92,7 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 		'cmp' {
 			cond_pos := p.tok.position()
 			cond := p.parse_identifier()
-			if cond !in ['eq', 'ne', 'gt', 'ge', 'lt', 'le', 'ltgt'] {
+			if cond !in ['eq', 'ne', 'gt', 'ge', 'lt', 'le'] {
 				report.error('invalid condition: `$cond`', cond_pos).emit()
 			}
 			instr.args << ast.Symbol{
