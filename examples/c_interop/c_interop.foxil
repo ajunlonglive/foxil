@@ -1,0 +1,29 @@
+; Simple example showing how easy it is to interoperate with C :).
+;
+; To run the example do:
+; 1) cc examples/c_interop/c_interop.c -c -o c_interop.o
+; 2) ./bin/foxilc -o c_interop -l c_interop.o examples/c_interop.foxil
+; 3) ./c_interop
+
+func @main() void {
+    call void @c_interop()
+    ret void
+}
+
+; struct SimpleStruct {
+;     int age;
+; };
+;
+; void SimpleStruct__show_name(struct SimpleStruct this) {
+;     printf("SimpleStruct.age: %d\n", this->age);
+; }
+
+@SimpleStruct = type { i32 %age }
+
+extern func @SimpleStruct::show_name(@SimpleStruct) void
+
+func @c_interop() void {
+    %ss = alloca @SimpleStruct, @SimpleStruct { i32 2004 }
+    call void @SimpleStruct::show_name(@SimpleStruct %ss)
+    ret void
+}
