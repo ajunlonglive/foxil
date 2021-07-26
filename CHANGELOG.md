@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 * **CHANGED:** Merge the `goto` instruction with the `br` instruction.
-* **ADDED:** `getelement` instruction, to access elements of arrays.
+* **ADDED:** `getelement` instruction, to access elements of arrays or structs.
 * **ADDED:** Documentation (`docs/` folder).
 * **ADDED:** Support for constants.
-* **ADDED:** Support for anonymous types.
+* **ADDED:** Support for anonymous structs.
 * **ADDED:** Support for alias.
 
 ## [0.1.0] - 2021-07-21

@@ -19,6 +19,7 @@ Options:
 
     --c-compiler, -cc <C-COMPILER>      use <C-COMPILER> to compile            
     --optimize, -opt                    apply optimizations
+    --no-safe-checks                    no safe checks are applied to code.
     
     --output, -o <FILENAME>             the output file will be called <FILENAME>
     --link, -l <OBJFILE>                add an <OBJFILE> file to be linked
@@ -67,6 +68,9 @@ fn parse_args() {
 			}
 			'--optimize', '-opt' {
 				g_context.optimize = true
+			}
+			'--no-safe-checks' {
+				g_context.no_safe_checks = true
 			}
 			'--output', '-o' {
 				if current_args.len > 1 {

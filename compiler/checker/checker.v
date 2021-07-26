@@ -166,7 +166,7 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 						mut ef := unsafe { &ts_fields[i] }
 						at := unsafe { c.typ(ef) }
 						c.check_types(at, et) or {
-							report.error('$err.msg, in field ${i+1}', e.pos).emit()
+							report.error('$err.msg, in field ${i + 1}', e.pos).emit()
 						}
 						ef = at
 					}
@@ -351,13 +351,37 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			is_ref := (instr.args[0] as ast.BoolLiteral).lit
 			t := c.expr(&instr.args[1])
 			ts := g_context.get_type_symbol(t)
-			if ts.kind != .array {
-				report.error('expected an array', instr.args[1].pos).emit()
+			idx := &instr.args[2]
+			if !c.expr(idx).is_number() {
+				report.error('expected an numeric index', instr.args[2].pos).emit()
 			} else {
-				if !c.expr(&instr.args[2]).is_number() {
-					report.error('expected an numeric index', instr.args[2].pos).emit()
-				} else {
-					instr.typ = (ts.info as ast.ArrayInfo).elem_type
+				mut i := 0
+				match mut ts.info {
+					ast.ArrayInfo {
+						if !g_context.no_safe_checks && mut idx is ast.IntegerLiteral {
+							i = idx.lit.int()
+							if i < 0 || i > ts.info.size {
+								report.error('index out of range (idx: $i, len: $ts.info.size)',
+									instr.pos).emit()
+							}
+						}
+						instr.typ = ts.info.elem_type
+					}
+					ast.StructInfo {
+						if !g_context.no_safe_checks && mut idx is ast.IntegerLiteral {
+							i = idx.lit.int()
+							if i < 1 || i > ts.info.fields.len {
+								report.error('index out of range (idx: $i, with $ts.info.fields.len field(s))',
+									instr.pos).emit()
+							}
+						}
+						instr.typ = ts.info.fields[if i == 1 { 0 } else { i - 1 }] or {
+							ast.void_type
+						}
+					}
+					else {
+						report.error('expected an array or a struct', instr.args[1].pos).emit()
+					}
 				}
 			}
 			nt := if is_ref { instr.typ.to_ptr() } else { instr.typ }

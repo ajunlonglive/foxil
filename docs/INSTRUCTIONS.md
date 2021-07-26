@@ -115,14 +115,18 @@ returned.
 
 ### Syntax
 ```llvm
-getelement [ref] <array>, <index>
+getelement [ref] <array|struct>, <index>
 ```
 
 ### Example
 ```llvm
 %array = alloca [5 x i32] [i32 1, i32 2, i32 3, i32 4, i32 5]
-%elem1 = getelement [5 x i32] %array, i32 0
-%elem2.ptr = getelement ref [5 x i32] %array, i32 1
+%elem1 = getelement [5 x i32] %array, i32 0 ; == i32:1
+%elem2.ptr = getelement ref [5 x i32] %array, i32 1 ; == i32*:2
+
+%struct = alloca {i32, bool}, {i32, bool} {i32 5, bool true}
+%s.elem1 = getelement {i32, bool} %struct, i32 1 ; == i32:5
+%s.elem2.ptr = getelement ref {i32, bool} %struct, i32 2 ; == i32*:5
 ```
 
 * * *

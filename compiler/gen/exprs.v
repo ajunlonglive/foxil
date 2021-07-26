@@ -39,7 +39,7 @@ fn (mut g Gen) expr(expr ast.Expr) {
 			ts := g_context.get_final_type_symbol(expr.typ)
 			g.write('((${cname(ts.gname)}){')
 			for i, e in expr.exprs {
-				g.write('.f${i+1} = ')
+				g.write('.f${i + 1} = ')
 				g.expr(e)
 				if i != expr.exprs.len - 1 {
 					g.write(', ')
@@ -143,13 +143,30 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			if instr.typ.is_ptr() {
 				g.write('&')
 			}
-			g.expr(instr.args[1])
-			g.write('[')
-			g.expr(instr.args[2])
-			g.write(']')
+			arg1 := instr.args[1]
+			g.expr(arg1)
+			k := g_context.get_type_symbol(if arg1 is ast.Symbol {
+				arg1.typ
+			} else if arg1 is ast.StructLiteral {
+				arg1.typ
+			} else {
+				ast.void_type
+			}).kind
+			match k {
+				array {
+					g.write('[')
+					g.expr(instr.args[2])
+					g.write(']')
+				}
+				.struct_ {
+					g.write('.f')
+					g.expr(instr.args[2])
+				}
+				else {}
+			}
 		}
 		'load' {
-			if instr.typ.is_ptr() || instr.typ.is_rawptr() {
+			if instr.typ.is_ptr() {
 				g.write('*')
 			}
 			g.expr(instr.args[0])
@@ -244,7 +261,7 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 				} else if ts.info is ast.StructInfo {
 					g.write('(($ts.gname){')
 					for i, f in ts.info.fields {
-						g.write('.f${i+1} = ')
+						g.write('.f${i + 1} = ')
 						g.write_default_value(f)
 						if i != ts.info.fields.len - 1 {
 							g.write(', ')

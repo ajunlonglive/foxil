@@ -65,10 +65,9 @@ func @main() void {
 }
 ```
 
-## Anonymous types
+## Anonymous structs
 
-Anonymous types (`structs`, really) are aggregated without names, which
-can have fields.
+Anonymous structs are aggregated without names, which can have fields.
 
 Example:
 
@@ -82,8 +81,8 @@ Too verbose, right? but for that there is a solution: aliases.
 
 ## Aliases
 
-Aliases are names that we can give to an anonymous type or to an existing
-type.
+Aliases are names that we can give to an anonymous struct or to an existing
+alias.
 
 Using an alias for the above example things get better:
 
@@ -171,6 +170,9 @@ char 'A'
 
 ; array literal
 [5 x i32] [i32 1, i32 2, i32 3, i32 4, i32 5]
+
+; struct literal
+{i32, bool} {i32 100, bool false}
 ```
 
 ## Labels

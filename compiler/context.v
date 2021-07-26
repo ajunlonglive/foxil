@@ -33,6 +33,7 @@ pub mut:
 	show_no_warnings         bool
 	compile_only             bool
 	compile_and_assemble     bool
+	no_safe_checks           bool
 	use_color                UseColor
 	anon_typ_idx             int
 	type_symbols             []ast.TypeSymbol

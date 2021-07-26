@@ -103,7 +103,7 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			instr.args << p.parse_literal()
 		}
 		'getelement' {
-			// getelement [ref] <ARRAY>, <INDEX>
+			// getelement [ref] <ARRAY|STRUCT>, <INDEX>
 			mut is_ref := false
 			if p.tok.lit == 'ref' {
 				is_ref = true

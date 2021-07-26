@@ -272,7 +272,7 @@ fn (mut p Parser) parse_type() ast.Type {
 		}
 		return ast.Type(g_context.find_or_register_array(elem_typ, size))
 	} else if p.accept(.lbrace) {
-		// anonymous type: { i32, bool }
+		// anonymous struct: { i32, bool }
 		p.inside_anon_t = true
 		mut fields := []ast.Type{}
 		if p.tok.kind != .rbrace {
