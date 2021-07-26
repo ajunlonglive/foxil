@@ -259,8 +259,8 @@ fn (mut g Gen) typ(typ ast.Type) string {
 			name := cname(ts.gname)
 			g.typedefs.writeln('typedef struct $name $name;')
 			g.structs.writeln('struct $name {')
-			for f in (ts.info as ast.StructInfo).fields {
-				g.structs.writeln('   ${g.typ(f.typ)} ${cname(f.gname)};')
+			for i, f in (ts.info as ast.StructInfo).fields {
+				g.structs.writeln('   ${g.typ(f)} f${i+1};')
 			}
 			g.structs.writeln('};\n')
 			g.types << idx

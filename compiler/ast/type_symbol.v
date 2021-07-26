@@ -51,7 +51,7 @@ pub:
 
 pub struct StructInfo {
 pub mut:
-	fields []&Symbol
+	fields []Type
 }
 
 pub struct AliasInfo {

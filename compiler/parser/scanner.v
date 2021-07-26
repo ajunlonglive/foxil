@@ -628,13 +628,9 @@ fn (mut s Scanner) text_scan() token.Token {
 				s.pos++
 			}
 			name := s.ident_name()
-			next_char := s.look_ahead(1)
 			kind := token.lookup(name)
 			if kind != .unknown {
 				return s.new_token(kind, name, name.len)
-			}
-			if s.pos == 0 && next_char == ` ` {
-				s.pos++
 			}
 			return s.new_token(.name, name, name.len)
 		} else if c.is_digit() || (c == `.` && nextc.is_digit()) {

@@ -73,8 +73,8 @@ can have fields.
 Example:
 
 ```llvm
-func @make_account(char* %name, i32 %age) { char* %name, i32 %age } {
-    ret { char* %name, i32 %age } { char* %name, i32 %age }
+func @make_account(char* %name, i32 %age) { char*, i32 } {
+    ret { char*, i32 } { char* %name, i32 %age }
 }
 ```
 
@@ -88,7 +88,7 @@ type.
 Using an alias for the above example things get better:
 
 ```llvm
-@Account = type { char* %name, i32 %age }
+@Account = type { char*, i32 }
 
 func @make_account(char* %name, i32 %age) @Account {
     ret @Account { char* %name, i32 %age }

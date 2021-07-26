@@ -151,7 +151,7 @@ pub fn (mut c Context) find_or_register_struct_type(s ast.StructInfo) int {
 pub fn (mut c Context) struct_name(s ast.StructInfo) string {
 	mut res := '{ '
 	for i, f in s.fields {
-		res += '${c.get_type_name(f.typ)}'
+		res += '${c.get_type_name(f)}'
 		if i != s.fields.len - 1 {
 			res += ', '
 		}

@@ -164,11 +164,11 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 					for i, e in expr.exprs {
 						et := c.expr(&e)
 						mut ef := unsafe { &ts_fields[i] }
-						at := unsafe { c.typ(ef.typ) }
+						at := unsafe { c.typ(ef) }
 						c.check_types(at, et) or {
-							report.error('$err.msg, in field `$ef.name`', e.pos).emit()
+							report.error('$err.msg, in field ${i+1}', e.pos).emit()
 						}
-						ef.typ = at
+						ef = at
 					}
 				}
 			}
@@ -424,7 +424,7 @@ fn (mut c Checker) typ(typ ast.Type) ast.Type {
 		mut ts := g_context.get_type_symbol(typ)
 		if mut ts.info is ast.ArrayInfo {
 			ts.info.elem_type = c.typ(ts.info.elem_type)
-		} else {
+		} else if mut ts.info is ast.StructInfo {
 			c.check_struct(mut ts)
 		}
 		return typ
@@ -440,7 +440,7 @@ fn (mut c Checker) typ(typ ast.Type) ast.Type {
 fn (mut c Checker) check_struct(mut ts ast.TypeSymbol) {
 	if mut ts.info is ast.StructInfo {
 		for mut f in ts.info.fields {
-			f.typ = c.typ(f.typ)
+			f = c.typ(f)
 		}
 	}
 }

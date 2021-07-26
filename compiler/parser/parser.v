@@ -272,18 +272,12 @@ fn (mut p Parser) parse_type() ast.Type {
 		}
 		return ast.Type(g_context.find_or_register_array(elem_typ, size))
 	} else if p.accept(.lbrace) {
-		// anonymous type: { i32 %field1, bool %field2 }
+		// anonymous type: { i32, bool }
 		p.inside_anon_t = true
-		mut fields := []&ast.Symbol{}
+		mut fields := []ast.Type{}
 		if p.tok.kind != .rbrace {
 			for {
-				typ := p.parse_type()
-				if p.tok.kind == .at {
-					report.error('type fields must start with `%`', p.tok.position()).emit()
-				}
-				mut sym := p.parse_symbol()
-				sym.typ = typ
-				fields << sym
+				fields << p.parse_type()
 				if !p.accept(.comma) {
 					break
 				}

@@ -18,7 +18,7 @@ func @main() void {
 ;     printf("SimpleStruct.age: %d\n", this.age);
 ; }
 
-@SimpleStruct = type { i32 %age }
+@SimpleStruct = type { i32 }
 
 extern func @SimpleStruct::show_age(@SimpleStruct) void
 

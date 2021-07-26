@@ -37,11 +37,9 @@ fn (mut g Gen) expr(expr ast.Expr) {
 		}
 		ast.StructLiteral {
 			ts := g_context.get_final_type_symbol(expr.typ)
-			info := ts.info as ast.StructInfo
 			g.write('((${cname(ts.gname)}){')
 			for i, e in expr.exprs {
-				name := info.fields[i].gname
-				g.write('.$name = ')
+				g.write('.f${i+1} = ')
 				g.expr(e)
 				if i != expr.exprs.len - 1 {
 					g.write(', ')
@@ -246,8 +244,8 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 				} else if ts.info is ast.StructInfo {
 					g.write('(($ts.gname){')
 					for i, f in ts.info.fields {
-						g.write('.$f.gname = ')
-						g.write_default_value(f.typ)
+						g.write('.f${i+1} = ')
+						g.write_default_value(f)
 						if i != ts.info.fields.len - 1 {
 							g.write(', ')
 						}

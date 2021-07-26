@@ -4,7 +4,7 @@ func @main() i32 {
     ret i32 0
 }
 
-@Account = type { char* %name, i32 %age }
+@Account = type { char*, i32 }
 
 func @make_account(char* %name, i32 %age) @Account {
     ret @Account { char* %name, i32 %age }
