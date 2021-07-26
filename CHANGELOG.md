@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.2.0] - 2021-07-26
+
 * **CHANGED:** Merge the `goto` instruction with the `br` instruction.
 * **ADDED:** `getelement` instruction, to access elements of arrays or struct fields.
 * **ADDED:** Documentation (`docs/` folder).
@@ -15,5 +17,6 @@ All notable changes to this project will be documented in this file.
 
 * First release (We generate functional binaries :D!).
 
-[Unreleased]: https://github.com/StunxFS/foxil/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/StunxFS/foxil/compare/v0.2.0...HEAD
+[v0.2.0]: https://github.com/StunxFS/foxil/releases/tag/v0.2.0
 [0.1.0]: https://github.com/StunxFS/foxil/releases/tag/0.1.0

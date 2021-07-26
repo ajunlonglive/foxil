@@ -66,7 +66,7 @@ binary passing it the option `--version`:
 
 ```bash
 $ ./bin/foxilc --version
-foxilc version 0.1.0
+foxilc version 0.2.0
 ```
 
 ## Contributions
