@@ -34,11 +34,10 @@ int main(int argc, char** argv) {
 converted to Foxil:
 
 ```llvm
-extern func @puts(char*) i32
+extern func @puts(str) i32
 
-func @main(i32 %argc, char** %argv) i32 {
-    %cstr = cast [12 x char] "Hello World!" as char*
-    call i32 @puts(char* %cstr)
+func @main(i32 %argc, str* %argv) i32 {
+    call i32 @puts(str "Hello World!")
     ret i32 0
 }
 ```

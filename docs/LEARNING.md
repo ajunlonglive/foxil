@@ -162,7 +162,7 @@ bool false
 
 char 'A'
 
-[2 x char] "AE"
+str "AE"
 
 ; to use variables, we use literal syntax
 %var = alloca i32, i32 100

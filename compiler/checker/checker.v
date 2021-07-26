@@ -119,13 +119,8 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 			return expr.typ
 		}
 		ast.StringLiteral {
-			ts := g_context.get_type_symbol(expr.typ)
-			if ts.kind != .array {
-				report.error('invalid string literal, expecting `[<LEN-VALUE> x char] <VALUE>`',
-					expr.pos).emit()
-			} else if (ts.info as ast.ArrayInfo).size != expr.lit.len {
-				report.error('invalid string literal, string literal is size $expr.lit.len, not ${(ts.info as ast.ArrayInfo).size}',
-					expr.pos).emit()
+			if expr.typ != ast.str_type {
+				report.error('invalid string literal, expecting `str <VALUE>`', expr.pos).emit()
 			}
 			return expr.typ
 		}
@@ -313,7 +308,6 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		'cast' {
 			from_t := c.expr(&instr.args[0])
 			to_t := c.typ((instr.args[1] as ast.TypeNode).typ)
-			gts := g_context.get_type_symbol(from_t)
 			if (from_t.is_number() && to_t.is_number())
 				|| (from_t.is_bool() && to_t.is_number())
 				|| (from_t.is_char() && to_t.is_number())
@@ -322,12 +316,6 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 				|| (from_t.is_ptr() && to_t.is_rawptr()) {
 				instr.typ = to_t
 				return to_t
-			} else if to_t.idx() == ast.char_type && to_t.is_ptr() && gts.info is ast.ArrayInfo {
-				// allow cast from `char[]` to `char*`
-				if gts.info.elem_type.is_char() {
-					instr.typ = to_t
-					return to_t
-				}
 			} else {
 				report.error('cannot cast `${ast.typ2str(from_t)}` to `${ast.typ2str(to_t)}`',
 					instr.pos).emit()
@@ -498,6 +486,9 @@ fn (mut c Checker) are_compatible_types(got ast.Type, expected ast.Type) bool {
 	if (expected.is_rawptr() && got.is_number())
 		|| (expected.is_rawptr() && got.is_ptr())
 		|| (expected.is_ptr() && got.is_rawptr()) {
+		return true
+	}
+	if expected == ast.char_type.to_ptr() && got.is_str() {
 		return true
 	}
 	return false

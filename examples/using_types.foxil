@@ -1,11 +1,10 @@
 func @main() i32 {
-    %.str = cast [3 x char] "Dog" as char*
-    %account = call @Account @make_account(char* %.str, i32 4)
+    %account = call @Account @make_account(str "Dog", i32 4)
     ret i32 0
 }
 
-@Account = type { char*, i32 }
+@Account = type { str, i32 }
 
-func @make_account(char* %name, i32 %age) @Account {
-    ret @Account { char* %name, i32 %age }
+func @make_account(str %name, i32 %age) @Account {
+    ret @Account { str %name, i32 %age }
 }

@@ -105,6 +105,11 @@ pub fn (t Type) is_char() bool {
 }
 
 [inline]
+pub fn (t Type) is_str() bool {
+	return t == ast.str_type
+}
+
+[inline]
 pub fn (t Type) is_bool() bool {
 	return t == ast.bool_type
 }
@@ -173,17 +178,18 @@ pub const (
 	void_type_idx   = 0
 	bool_type_idx   = 1
 	char_type_idx   = 2
-	i8_type_idx     = 3
-	i16_type_idx    = 4
-	i32_type_idx    = 5
-	i64_type_idx    = 6
-	u8_type_idx     = 7
-	u16_type_idx    = 8
-	u32_type_idx    = 9
-	u64_type_idx    = 10
-	f32_type_idx    = 11
-	f64_type_idx    = 12
-	rawptr_type_idx = 13
+	str_type_idx    = 3
+	i8_type_idx     = 4
+	i16_type_idx    = 5
+	i32_type_idx    = 6
+	i64_type_idx    = 7
+	u8_type_idx     = 8
+	u16_type_idx    = 9
+	u32_type_idx    = 10
+	u64_type_idx    = 11
+	f32_type_idx    = 12
+	f64_type_idx    = 13
+	rawptr_type_idx = 14
 )
 
 pub const (
@@ -202,6 +208,7 @@ pub const (
 	void_type   = new_type(void_type_idx)
 	bool_type   = new_type(bool_type_idx)
 	char_type   = new_type(char_type_idx)
+	str_type    = new_type(str_type_idx)
 	i8_type     = new_type(i8_type_idx)
 	i16_type    = new_type(i16_type_idx)
 	i32_type    = new_type(i32_type_idx)
@@ -216,6 +223,6 @@ pub const (
 )
 
 pub const (
-	native_type_names = ['void', 'bool', 'char', 'i8', 'i16', 'i32', 'i64', 'u8', 'u16', 'u32',
-		'u64', 'f32', 'f64', 'rawptr']
+	native_type_names = ['void', 'bool', 'char', 'str', 'i8', 'i16', 'i32', 'i64', 'u8', 'u16',
+		'u32', 'u64', 'f32', 'f64', 'rawptr']
 )

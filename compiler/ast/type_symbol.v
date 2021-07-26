@@ -25,7 +25,7 @@ pub enum TypeKind {
 	void
 	bool
 	char
-	uchar
+	str
 	i8
 	i16
 	i32

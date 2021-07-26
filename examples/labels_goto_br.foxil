@@ -1,22 +1,20 @@
-extern func @printf(char*, ...) i32
+extern func @printf(str, ...) i32
+extern func @puts(str) i32
 
 func @main() i32 {
     %age = alloca i32, i32 18
     
-    %.str = cast [9 x char] "Age: %d\n" as char*
-    call i32 @printf(char* %.str, i32 %age)
+    call i32 @printf(str "Age: %d\n", i32 %age)
     
     %is.greater.than.18 = cmp ge i32 %age, i32 18
-    br bool %is.greater.than.18, is, not_is
+    br bool %is.greater.than.18, is, is_not
 
 is:
-    %.str.2 = cast [25 x char] "is greater than 18 ages\n" as char*
-    call i32 @printf(char* %.str.2)
+    call i32 @puts(str "is greater than 18 ages")
     br end
 
-not_is:
-    %.str.3 = cast [29 x char] "is not greater than 18 ages\n" as char*
-    call i32 @printf(char* %.str.3)
+is_not:
+    call i32 @puts(str "is not greater than 18 ages")
 
 end:
     ret i32 0

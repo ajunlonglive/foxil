@@ -9,6 +9,7 @@ pub fn (mut c Context) install_native_types() {
 	c.register_type_symbol(name: 'void', gname: 'void', kind: .void)
 	c.register_type_symbol(name: 'bool', gname: 'uint8_t', kind: .bool)
 	c.register_type_symbol(name: 'char', gname: 'char', kind: .char)
+	c.register_type_symbol(name: 'str', gname: 'char*', kind: .str)
 	c.register_type_symbol(name: 'i8', gname: 'int8_t', kind: .i8)
 	c.register_type_symbol(name: 'i16', gname: 'int16_t', kind: .i16)
 	c.register_type_symbol(name: 'i32', gname: 'int', kind: .i32)
