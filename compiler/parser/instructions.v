@@ -119,6 +119,14 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 		'load', 'ret' {
 			instr.args << p.parse_literal()
 		}
+		'select' {
+			// select <bool>, <val1>, <val2>
+			instr.args << p.parse_literal()
+			p.check(.comma)
+			instr.args << p.parse_literal()
+			p.check(.comma)
+			instr.args << p.parse_literal()
+		}
 		'store' {
 			instr.args << p.parse_literal()
 			p.check(.comma)

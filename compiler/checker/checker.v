@@ -404,6 +404,17 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 				report.error('$err.msg, in return argument', instr.args[0].pos).emit()
 			}
 		}
+		'select' {
+			t := c.expr(&instr.args[0])
+			if t.is_bool() {
+				instr.typ = c.expr(&instr.args[1])
+				t2 := c.expr(&instr.args[2])
+				c.check_types(instr.typ, t2) or { report.error(err.msg, instr.args[2].pos).emit() }
+				return instr.typ
+			} else {
+				report.error('expected a boolean literal', instr.args[0].pos).emit()
+			}
+		}
 		'store' {
 			if instr.args[1] !is ast.Symbol {
 				report.error('`store` only works with symbols', instr.args[1].pos).emit()

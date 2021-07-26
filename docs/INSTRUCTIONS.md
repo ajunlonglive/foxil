@@ -88,7 +88,7 @@ first argument, and returns a bool
 
 ### Syntax
 ```llvm
-cmp <COND> <op1> <op2>
+cmp <COND> <op1>, <op2>
 ```
 
 Where `<COND>` is one of:
@@ -161,6 +161,23 @@ ret <LITERAL>
 ```llvm
 ret void
 ret i32 5
+```
+
+* * *
+
+## `select`
+`select` returns a value depending on the condition. If true, it will return
+the first value, otherwise it will return the second.
+
+### Syntax
+```llvm
+select <BOOL>, <VAL1>, <VAL2>
+```
+
+### Example
+```llvm
+%r = alloca bool, bool true
+%v = select bool %r, i32 20, i32 5
 ```
 
 * * *

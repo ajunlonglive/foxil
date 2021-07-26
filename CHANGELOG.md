@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 * **ADDED:** Support for constants.
 * **ADDED:** Support for anonymous structs.
 * **ADDED:** Support for alias.
+* **ADDED:** `select` instruction, to select a value based on a boolean condition.
 
 ## [0.1.0] - 2021-07-21
 

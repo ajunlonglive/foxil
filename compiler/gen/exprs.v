@@ -178,6 +178,14 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 				g.expr(instr.args[0])
 			}
 		}
+		'select' {
+			g.write('(')
+			g.expr(instr.args[0])
+			g.write(') ? ')
+			g.expr(instr.args[1])
+			g.write(' : ')
+			g.expr(instr.args[2])
+		}
 		'store' {
 			mut req_parens := false
 			if (instr.args[1] as ast.Symbol).typ.is_ptr() {
