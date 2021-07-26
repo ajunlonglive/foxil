@@ -368,15 +368,17 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 						instr.typ = ts.info.elem_type
 					}
 					ast.StructInfo {
-						if !g_context.no_safe_checks && mut idx is ast.IntegerLiteral {
+						if mut idx is ast.IntegerLiteral {
 							i = idx.lit.int()
-							if i < 1 || i > ts.info.fields.len {
+							if !g_context.no_safe_checks && (i < 1 || i > ts.info.fields.len) {
 								report.error('index out of range (idx: $i, with $ts.info.fields.len field(s))',
 									instr.pos).emit()
 							}
-						}
-						instr.typ = ts.info.fields[if i == 1 { 0 } else { i - 1 }] or {
-							ast.void_type
+							instr.typ = ts.info.fields[if i == 1 { 0 } else { i - 1 }] or {
+								ast.void_type
+							}
+						} else {
+							report.error('expected an integer literal', idx.pos).emit()
 						}
 					}
 					else {
