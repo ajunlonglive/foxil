@@ -153,7 +153,7 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 				ast.void_type
 			}).kind
 			match k {
-				array {
+				.array {
 					g.write('[')
 					g.expr(instr.args[2])
 					g.write(']')
