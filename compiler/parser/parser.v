@@ -10,14 +10,13 @@ import compiler.token
 
 pub struct Parser {
 mut:
-	sf            &ast.SourceFile = 0
-	scanner       Scanner
-	prev_tok      token.Token
-	tok           token.Token
-	peek_tok      token.Token
-	scope         &ast.Scope
-	labels        []string
-	inside_anon_t bool
+	sf       &ast.SourceFile = 0
+	scanner  Scanner
+	prev_tok token.Token
+	tok      token.Token
+	peek_tok token.Token
+	scope    &ast.Scope
+	labels   []string
 }
 
 pub fn run_parser() {
@@ -107,7 +106,7 @@ fn (mut p Parser) parse_symbol() &ast.Symbol {
 			p.next()
 		}
 		.mod {
-			if p.scope.is_root && !p.inside_anon_t {
+			if p.scope.is_root {
 				report.error('local scope prefix (`%`) cannot be used in global scope',
 					pos).emit()
 			}
@@ -273,7 +272,6 @@ fn (mut p Parser) parse_type() ast.Type {
 		return ast.Type(g_context.find_or_register_array(elem_typ, size))
 	} else if p.accept(.lbrace) {
 		// anonymous struct: { i32, bool }
-		p.inside_anon_t = true
 		mut fields := []ast.Type{}
 		if p.tok.kind != .rbrace {
 			for {
@@ -284,7 +282,6 @@ fn (mut p Parser) parse_type() ast.Type {
 			}
 		}
 		p.check(.rbrace)
-		p.inside_anon_t = false
 		return ast.Type(g_context.find_or_register_struct_type(ast.StructInfo{fields}))
 	}
 	prefix := p.tok.kind
