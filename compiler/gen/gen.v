@@ -226,16 +226,13 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 				.const_ {
 					g.to_constant = true
 					// `is_const` tells us if we should use `const` or `#define`
-					is_const := stmt.expr is ast.ArrayLiteral
+					is_const := stmt.expr is ast.ArrayLiteral || stmt.expr is ast.StructLiteral
 					g.write(if is_const { 'const ${g.typ(stmt.left.typ)} ' } else { '#define ' })
 					g.write(cname(stmt.left.gname))
 					g.write(if is_const { ' = ' } else { ' ' })
 					g.expr(stmt.expr)
 					g.writeln(if is_const { ';' } else { '' })
 					g.to_constant = false
-				}
-				.type_ {
-					// TODO
 				}
 				else {}
 			}
