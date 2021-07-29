@@ -346,34 +346,45 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			if !c.expr(idx).is_number() {
 				report.error('expected an numeric index', instr.args[2].pos).emit()
 			} else {
-				mut i := 0
-				match mut ts.info {
-					ast.ArrayInfo {
-						if !g_context.no_safe_checks && mut idx is ast.IntegerLiteral {
-							i = idx.lit.int()
-							if i < 0 || i > ts.info.size {
-								report.error('index out of range (idx: $i, len: $ts.info.size)',
-									instr.pos).emit()
-							}
-						}
-						instr.typ = ts.info.elem_type
+				match true {
+					t.is_str() {
+						instr.typ = ast.char_type
 					}
-					ast.StructInfo {
-						if mut idx is ast.IntegerLiteral {
-							i = idx.lit.int()
-							if !g_context.no_safe_checks && (i < 1 || i > ts.info.fields.len) {
-								report.error('index out of range (idx: $i, with $ts.info.fields.len field(s))',
-									instr.pos).emit()
-							}
-							instr.typ = ts.info.fields[if i == 1 { 0 } else { i - 1 }] or {
-								ast.void_type
-							}
-						} else {
-							report.error('expected an integer literal', idx.pos).emit()
-						}
+					t.is_ptr() {
+						instr.typ = t.deref()
 					}
 					else {
-						report.error('expected an array or a struct', instr.args[1].pos).emit()
+						mut i := 0
+						match mut ts.info {
+							ast.ArrayInfo {
+								if !g_context.no_safe_checks && mut idx is ast.IntegerLiteral {
+									i = idx.lit.int()
+									if i < 0 || i > ts.info.size {
+										report.error('index out of range (idx: $i, len: $ts.info.size)',
+											instr.pos).emit()
+									}
+								}
+								instr.typ = ts.info.elem_type
+							}
+							ast.StructInfo {
+								if mut idx is ast.IntegerLiteral {
+									i = idx.lit.int()
+									if !g_context.no_safe_checks
+										&& (i < 1 || i > ts.info.fields.len) {
+										report.error('index out of range (idx: $i, with $ts.info.fields.len field(s))',
+											instr.pos).emit()
+									}
+									instr.typ = ts.info.fields[if i == 1 { 0 } else { i - 1 }] or {
+										ast.void_type
+									}
+								} else {
+									report.error('expected an integer literal', idx.pos).emit()
+								}
+							}
+							else {
+								report.error('expected an array or a struct', instr.args[1].pos).emit()
+							}
+						}
 					}
 				}
 			}

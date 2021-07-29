@@ -145,24 +145,32 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 			arg1 := instr.args[1]
 			g.expr(arg1)
-			k := g_context.get_type_symbol(if arg1 is ast.Symbol {
+			t := if arg1 is ast.Symbol {
 				arg1.typ
 			} else if arg1 is ast.StructLiteral {
 				arg1.typ
 			} else {
 				ast.void_type
-			}).kind
-			match k {
-				.array {
-					g.write('[')
-					g.expr(instr.args[2])
-					g.write(']')
+			}
+			arg2 := instr.args[2]
+			if t.is_ptr() {
+				g.write('[')
+				g.expr(arg2)
+				g.write(']')
+			} else {
+				k := g_context.get_type_symbol(t).kind
+				match k {
+					.array, .str {
+						g.write('[')
+						g.expr(arg2)
+						g.write(']')
+					}
+					.struct_ {
+						g.write('.f')
+						g.expr(arg2)
+					}
+					else {}
 				}
-				.struct_ {
-					g.write('.f')
-					g.expr(instr.args[2])
-				}
-				else {}
 			}
 		}
 		'load' {
