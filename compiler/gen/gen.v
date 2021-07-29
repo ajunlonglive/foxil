@@ -180,7 +180,10 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 				}
 			} else {
 				for i, arg in stmt.args {
-					arg_ := '${g.typ(arg.typ)} $arg.gname'
+					mut arg_ := '${g.typ(arg.typ)}'
+					if arg.gname != '' {
+						arg_ += ' $arg.gname'
+					}
 					g.fns.write_string(arg_)
 					if !stmt.is_extern {
 						g.write(arg_)
@@ -216,8 +219,7 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 		}
 		ast.AssignStmt {
 			sym := stmt.left
-			g.write('${g.typ(sym.typ)} ${cname(sym.gname)}')
-			g.write(' = ')
+			g.write('${g.typ(sym.typ)} ${cname(sym.gname)} = ')
 			g.expr(stmt.right)
 			g.writeln(';')
 		}
@@ -238,7 +240,7 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 			}
 		}
 		ast.LabelStmt {
-			g.writeln('$stmt.name: {} /* label */')
+			g.writeln('\n$stmt.name:{} /* label */')
 		}
 		ast.ExprStmt {
 			g.expr(stmt.expr)
@@ -251,8 +253,8 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 fn (mut g Gen) typ(typ ast.Type) string {
 	ts := g_context.get_type_symbol(typ)
 	idx := typ.idx()
-	if ts.kind == .struct_ {
-		if idx !in g.types {
+	if idx !in g.types {
+		if ts.kind == .struct_ {
 			name := cname(ts.gname)
 			g.typedefs.writeln('typedef struct $name $name;')
 			g.structs.writeln('struct $name {')
@@ -261,9 +263,7 @@ fn (mut g Gen) typ(typ ast.Type) string {
 			}
 			g.structs.writeln('};\n')
 			g.types << idx
-		}
-	} else if ts.kind == .alias {
-		if idx !in g.types {
+		} else if ts.kind == .alias {
 			// we generate the parent of the alias first (if it is not already generated)
 			name := cname(g.typ((ts.info as ast.AliasInfo).parent))
 			g.typedefs.writeln('typedef struct $name ${cname(ts.gname)};')

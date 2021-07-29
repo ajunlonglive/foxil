@@ -252,9 +252,9 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 		else {
 			if typ.is_ptr() {
 				tderef := typ.deref()
-				g.write('((${g.typ(tderef)}[]){')
+				g.write('((${g.typ(tderef)}[]){ ')
 				g.write_default_value(tderef)
-				g.write('})')
+				g.write(' })')
 			} else {
 				ts := g_context.get_type_symbol(typ)
 				if ts.info is ast.ArrayInfo {
