@@ -284,6 +284,8 @@ fn (mut g Gen) write_default_value(typ ast.Type) {
 						}
 					}
 					g.write('})')
+				} else if ts.info is ast.AliasInfo {
+					g.write_default_value(ts.info.parent)
 				}
 			}
 		}
