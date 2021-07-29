@@ -307,13 +307,16 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 		}
 		'cast' {
 			from_t := c.expr(&instr.args[0])
+			from_ts := g_context.get_type_symbol(from_t)
 			to_t := c.typ((instr.args[1] as ast.TypeNode).typ)
 			if (from_t.is_number() && to_t.is_number())
 				|| (from_t.is_bool() && to_t.is_number())
 				|| (from_t.is_char() && to_t.is_number())
 				|| (from_t.is_number() && to_t.is_char())
 				|| (from_t.is_rawptr() && to_t.is_ptr())
-				|| (from_t.is_ptr() && to_t.is_rawptr()) {
+				|| (from_t.is_ptr() && to_t.is_rawptr())
+				|| (from_ts.info is ast.ArrayInfo
+				&& (from_ts.info as ast.ArrayInfo).elem_type.is_char() && to_t.is_str()) {
 				instr.typ = to_t
 				return to_t
 			} else {
@@ -488,7 +491,8 @@ fn (mut c Checker) are_compatible_types(got ast.Type, expected ast.Type) bool {
 		|| (expected.is_ptr() && got.is_rawptr()) {
 		return true
 	}
-	if expected == ast.char_type.to_ptr() && got.is_str() {
+	charptr_t := ast.char_type.to_ptr()
+	if (expected == charptr_t && got.is_str()) || (got == charptr_t && expected.is_str()) {
 		return true
 	}
 	return false
