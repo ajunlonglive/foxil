@@ -148,6 +148,23 @@ load <literal>
 
 * * *
 
+## `ref`
+`ref` creates a pointer that contains the address of the literal
+passed as an argument.
+
+### Syntax
+```llvm
+ref <LITERAL>
+```
+
+### Example
+```llvm
+%a = ref str %msg ; str*
+%b = ref i32 5 ; i32*
+```
+
+* * *
+
 ## `ret`
 `ret` makes the function return the argument that the instruction receives.
 If the function returns `void`, then` ret void` should be used.

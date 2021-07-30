@@ -103,7 +103,7 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			instr.args << p.parse_literal()
 		}
 		'getelement' {
-			// getelement [ref] <ARRAY|STRUCT>, <INDEX>
+			// getelement [ref] <ARRAY|STRUCT|STRING|POINTER>, <INDEX>
 			mut is_ref := false
 			if p.tok.lit == 'ref' {
 				is_ref = true
@@ -116,7 +116,7 @@ fn (mut p Parser) parse_instruction() ast.Expr {
 			p.check(.comma)
 			instr.args << p.parse_literal()
 		}
-		'load', 'ret' {
+		'load', 'ref', 'ret' {
 			instr.args << p.parse_literal()
 		}
 		'select' {

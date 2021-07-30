@@ -12,14 +12,9 @@ pub enum Kind {
 	string // "Look ma, I'm a string!"
 	char // 'A'
 	nl // '\n'
-	plus // +
 	minus // -
 	mult // *
-	div // /
 	mod // %
-	xor // ^
-	pipe // |
-	bit_not // ~
 	not // !
 	question // ?
 	hash // #
@@ -59,14 +54,9 @@ const tokens = map{
 	Kind.string:     'string'
 	Kind.char:       'character'
 	Kind.nl:         '\\n'
-	Kind.plus:       '+'
 	Kind.minus:      '-'
 	Kind.mult:       '*'
-	Kind.div:        '/'
 	Kind.mod:        '%'
-	Kind.xor:        '^'
-	Kind.pipe:       '|'
-	Kind.bit_not:    '~'
 	Kind.not:        '!'
 	Kind.question:   '?'
 	Kind.hash:       '#'
@@ -134,20 +124,6 @@ pub:
 	pos     int
 	len     int
 	tidx    int
-}
-
-// is_scalar returns a boolean. true if the given token is a scalar, e.g.,
-// number or string. Otherwise, it will return false
-[inline]
-pub fn (tok Token) is_scalar() bool {
-	return tok.kind in [.number, .string]
-}
-
-// is_unary returns a boolean. true if the given token is unary, false if the
-// given token is not unary
-[inline]
-pub fn (tok Token) is_unary() bool {
-	return tok.kind in [.plus, .minus, .mult, .not, .bit_not, .amp]
 }
 
 // str returns the string corresponding to the token.

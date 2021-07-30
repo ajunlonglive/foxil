@@ -179,6 +179,16 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			}
 			g.expr(instr.args[0])
 		}
+		'ref' {
+			arg0 := instr.args[0]
+			if arg0 is ast.Symbol {
+				g.write('&$arg0.gname')
+			} else {
+				g.write('(&(${g.typ(instr.typ.deref())}[]){')
+				g.expr(arg0)
+				g.write('}[0])')
+			}
+		}
 		'ret' {
 			g.write('return')
 			if !instr.typ.is_void() {

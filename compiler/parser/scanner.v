@@ -651,32 +651,11 @@ fn (mut s Scanner) text_scan() token.Token {
 		}
 		// all other tokens
 		match c {
-			`+` {
-				return s.new_token(.plus, '', 1)
-			}
-			`-` {
-				return s.new_token(.minus, '', 1)
-			}
 			`*` {
 				return s.new_token(.mult, '', 1)
 			}
-			`/` {
-				return s.new_token(.div, '', 1)
-			}
 			`%` {
 				return s.new_token(.mod, '', 1)
-			}
-			`^` {
-				return s.new_token(.xor, '', 1)
-			}
-			`|` {
-				return s.new_token(.pipe, '', 1)
-			}
-			`&` {
-				return s.new_token(.amp, '', 1)
-			}
-			`~` {
-				return s.new_token(.bit_not, '', 1)
 			}
 			`?` {
 				return s.new_token(.question, '', 1)

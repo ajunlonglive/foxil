@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 * **CHANGED:** Deprecate the use of an array of chars for string literals; use `str` instead.
 * **CHANGED:** Implement `getelement` instruction for `str` and pointers.
+* **CHANGED:** Implement `ref` instruction.
 
 ## [v0.2.0] - 2021-07-26
 

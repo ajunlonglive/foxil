@@ -399,6 +399,12 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 			instr.typ = t
 			return if t.is_ptr() { t.deref() } else { t }
 		}
+		'ref' {
+			t := c.expr(&instr.args[0])
+			tptr := t.to_ptr()
+			instr.typ = tptr
+			return tptr
+		}
 		'ret' {
 			instr.typ = c.expr(&instr.args[0])
 			c.check_types(instr.typ, c.cur_fn.ret_typ) or {
