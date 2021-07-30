@@ -507,9 +507,9 @@ fn (mut p Parser) parse_global_assign() ast.Stmt {
 			}))
 			ts := g_context.get_type_symbol(typ)
 			if ts.info is ast.StructInfo {
-				for f in ts.info.fields {
+				for i, f in ts.info.fields {
 					if !f.is_ptr() && left.name == '@${g_context.get_type_name(f)}' {
-						mut e := report.error('recursion detected in type `$left.name`',
+						mut e := report.error('recursion detected in field ${i + 1} of type `$left.name`',
 							left.pos)
 						e.help('use a pointer instead').emit()
 					}
