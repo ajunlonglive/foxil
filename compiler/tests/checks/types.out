@@ -1,4 +1,18 @@
-compiler/tests/checks/types.foxil:4:1: error: recursion detected in field 1 of type `@Recursive`
-     4 | @Recursive = type {
-       | ^^^^^^^^^^
-       = help: use a pointer instead
+compiler/tests/checks/types.foxil:1:23: error: type `Unknown` not found
+     1 | @AliasToUnknown = type @Unknown
+       |                        ^^^^^^^^
+compiler/tests/checks/types.foxil:2:1: error: a type alias cannot refer to itself
+     2 | @AliasToSelf = type @AliasToSelf
+       | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+compiler/tests/checks/types.foxil:9:31: error: too few expressions to type ‘{ i32, bool }’ (2 expression(s) are expected, not 3)
+     9 |     %q = alloca { i32, bool }, { i32, bool } { i32 5, bool true, char 'A' }
+       |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+compiler/tests/checks/types.foxil:10:27: error: too few expressions to type ‘{ bool }’ (1 expression(s) are expected, not 3)
+    10 |     %q2 = alloca { bool }, { bool } { i32 5, bool true, char 'A' }
+       |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+compiler/tests/checks/types.foxil:13:29: error: too many expressions to type ‘{ i32 }’ (1 expression(s) are expected, not 0)
+    13 |     %f2 = alloca @FastAlias, @FastAlias { }
+       |                              ^^^^^^^^^^^^^^
+compiler/tests/checks/types.foxil:15:23: error: too few expressions to type ‘{  }’ (0 expression(s) are expected, not 1)
+    15 |     %z = alloca @Zero, @Zero {i32 0}
+       |                        ^^^^^^^^^^^^^

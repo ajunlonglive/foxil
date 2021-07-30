@@ -9,8 +9,12 @@ amount := files.len
 mut idx := 1
 println(term.header('Checking $amount tests', '-'))
 for file in files {
+	mut without_out := false
 	outname := file.replace('.foxil', '.out')
-	outfile := os.read_file(outname) ?
+	outfile := os.read_file(outname) or {
+		without_out = true
+		''
+	}
 	print(term.cyan(' [$idx/$amount] '))
 	print('$file')
 	res := os.execute('bin/foxilc $file')
@@ -19,7 +23,12 @@ for file in files {
 			os.write_file(outname, res.output) ?
 			println(term.green(' [UPDATED]'))
 		} else {
-			println(term.cyan(' [NOT UPDATED]'))
+			if without_out {
+				os.write_file(outname, res.output) ?
+				println(term.cyan(' [`.out` FILE CREATED]'))
+			} else {
+				println(term.cyan(' [NOT UPDATED]'))
+			}
 		}
 	}
 	idx++

@@ -1,10 +1,6 @@
 @AliasToUnknown = type @Unknown
 @AliasToSelf = type @AliasToSelf
 
-@Recursive = type {
-    @Recursive
-}
-
 @FastAlias = type { i32 }
 
 @Zero = type {}
