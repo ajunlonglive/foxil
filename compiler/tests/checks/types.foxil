@@ -5,7 +5,7 @@
 
 @Zero = type {}
 
-func @main() void {
+func @main(i32 %argc, str* %argv) i32 {
     %q = alloca { i32, bool }, { i32, bool } { i32 5, bool true, char 'A' }
     %q2 = alloca { bool }, { bool } { i32 5, bool true, char 'A' }
     
@@ -13,5 +13,5 @@ func @main() void {
     %f2 = alloca @FastAlias, @FastAlias { }
     
     %z = alloca @Zero, @Zero {i32 0}
-    ret void
+    ret i32 0
 }

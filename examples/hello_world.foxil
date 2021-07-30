@@ -2,7 +2,7 @@
 
 extern func @puts(str) i32
 
-func @main(i32 %argc, char** %argv) i32 {
+func @main(i32 %argc, str* %argv) i32 {
     call i32 @puts(str "Hello World!")
     ret i32 0
 }

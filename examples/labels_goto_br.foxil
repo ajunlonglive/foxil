@@ -1,7 +1,7 @@
 extern func @printf(str, ...) i32
 extern func @puts(str) i32
 
-func @main() i32 {
+func @main(i32 %argc, str* %argv) i32 {
     %age = alloca i32, i32 18
     
     call i32 @printf(str "Age: %d\n", i32 %age)

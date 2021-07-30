@@ -8,7 +8,7 @@ func @func.args.2(i32 %f) void {
 func @func.args.3(i32 %f, i32 %fa, i32 %m) void {
 }
 
-func @main() i32 {
+func @main(i32 %argc, str* %argv) i32 {
     call void @func.args.0(i32 5)
     call void @func.args.2(i32 5, i32 5)
     call void @func.args.3(i32 5, i32 5)

@@ -3,6 +3,7 @@
 // file.
 module checker
 
+import compiler
 import compiler.ast
 
 pub struct Checker {
@@ -22,6 +23,24 @@ pub fn run_checker() {
 fn (mut c Checker) check_file(mut sf ast.SourceFile) {
 	for mut stmt in sf.nodes {
 		c.stmt(mut stmt)
+	}
+	main_fn := ((g_context.root.lookup('@main') or {
+		compiler.foxil_error('function `main` not found')
+		return
+	}).node as ast.FuncDecl)
+	if main_fn.ret_typ != ast.i32_type {
+		report.error('function `main` should return `i32`', main_fn.pos).emit()
+	} else if main_fn.args.len != 2 {
+		report.error('function `main` should receive 2 arguments (i32, str*)', main_fn.pos).emit()
+	} else {
+		if main_fn.args[0].typ != ast.i32_type {
+			report.error('first argument of function `main` (number of arguments) should be of type `i32`',
+				main_fn.args[0].pos).emit()
+		}
+		if main_fn.args[1].typ != ast.str_type.to_ptr() {
+			report.error('second argument of function `main` (the arguments) should be of type `str*`',
+				main_fn.args[1].pos).emit()
+		}
 	}
 }
 

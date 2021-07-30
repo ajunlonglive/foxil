@@ -1,6 +1,6 @@
 extern func @printf(str, ...) i32
 
-func @main() i32 {
+func @main(i32 %argc, str* %argv) i32 {
     %value = alloca i32, i32 2000
     call i32 @printf(str "Current year: %d\n", i32 %value)
     ret i32 0

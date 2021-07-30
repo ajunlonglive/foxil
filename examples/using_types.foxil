@@ -1,4 +1,4 @@
-func @main() i32 {
+func @main(i32 %argc, str* %argv) i32 {
     %account = call @Account @make_account(str "Dog", i32 4)
     ret i32 0
 }
