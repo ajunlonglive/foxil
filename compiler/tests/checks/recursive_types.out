@@ -1,0 +1,4 @@
+compiler/tests/checks/recursive_types.foxil:1:1: error: recursion detected in field 1 of type `@Recursive`
+     1 | @Recursive = type {
+       | ^^^^^^^^^^
+       = help: use a pointer instead
