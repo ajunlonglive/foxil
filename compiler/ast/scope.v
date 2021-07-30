@@ -9,7 +9,6 @@ pub mut:
 	parent       &Scope = 0
 	is_root      bool
 	symbol_table map[string]&Symbol
-	anon_symbols []&Symbol
 }
 
 // new_scope creates a new scope
@@ -37,15 +36,11 @@ pub fn new_scope_with_parent(parent &Scope) &Scope {
 // add adds the specified symbol with the specified name to the symbol table
 // of this scope
 pub fn (mut s Scope) add(name string, sym &Symbol) {
-	if name.len > 0 && name != '_' {
-		if p := s.symbol_table[name] {
-			mut e := report.error('redefinition of `$name`', sym.pos)
-			e.note_with_pos('previous definition of `$name` here', p.pos).emit()
-		} else {
-			s.symbol_table[name] = unsafe { sym }
-		}
+	if p := s.symbol_table[name] {
+		mut e := report.error('redefinition of `$name`', sym.pos)
+		e.note_with_pos('previous definition of `$name` here', p.pos).emit()
 	} else {
-		s.anon_symbols << unsafe { sym }
+		s.symbol_table[name] = unsafe { sym }
 	}
 }
 

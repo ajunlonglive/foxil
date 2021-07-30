@@ -505,6 +505,16 @@ fn (mut p Parser) parse_global_assign() ast.Stmt {
 				kind: .alias
 				info: ast.AliasInfo{typ}
 			}))
+			ts := g_context.get_type_symbol((g_context.get_type_symbol(left.typ).info as ast.AliasInfo).parent)
+			if ts.info is ast.StructInfo {
+				for f in ts.info.fields {
+					if !f.is_ptr() && left.name == '@${g_context.get_type_name(f)}' {
+						mut e := report.error('recursion detected in type `$left.name`',
+							left.pos)
+						e.help('use a pointer instead').emit()
+					}
+				}
+			}
 		}
 		else {
 			report.error('invalid instruction for global symbols', instr_pos).emit()

@@ -66,7 +66,7 @@ mut:
 	opt         string
 	indent      int
 	empty_line  bool
-	types       []int
+	types       []string
 	to_constant bool
 }
 
@@ -81,6 +81,7 @@ pub fn run_gen() {
 		opt: if g_context.optimize { '-O2' } else { '' }
 	}
 	g_context.files_to_delete << gen.fx_runtime_h
+	g.gen_types()
 	for sf in g_context.source_files {
 		g.gen_file(&sf)
 	}
@@ -250,27 +251,29 @@ fn (mut g Gen) stmt(stmt ast.Stmt) {
 	}
 }
 
-fn (mut g Gen) typ(typ ast.Type) string {
-	ts := g_context.get_type_symbol(typ)
-	idx := typ.idx()
-	if idx !in g.types {
-		if ts.kind == .struct_ {
-			name := cname(ts.gname)
-			g.typedefs.writeln('typedef struct $name $name;')
-			g.structs.writeln('struct $name {')
-			for i, f in (ts.info as ast.StructInfo).fields {
-				g.structs.writeln('   ${g.typ(f)} f${i + 1};')
+fn (mut g Gen) gen_types() {
+	for ts in g_context.type_symbols {
+		if ts.name !in g.types {
+			if ts.kind == .struct_ {
+				name := cname(ts.gname)
+				g.typedefs.writeln('typedef struct $name $name;')
+				g.structs.writeln('struct $name {')
+				for i, f in (ts.info as ast.StructInfo).fields {
+					g.structs.writeln('   ${g.typ(f)} f${i + 1};')
+				}
+				g.structs.writeln('};\n')
+			} else if ts.kind == .alias {
+				// we generate the parent of the alias first (if it is not already generated)
+				name := cname(g.typ((ts.info as ast.AliasInfo).parent))
+				g.typedefs.writeln('typedef struct $name ${cname(ts.gname)};')
 			}
-			g.structs.writeln('};\n')
-			g.types << idx
-		} else if ts.kind == .alias {
-			// we generate the parent of the alias first (if it is not already generated)
-			name := cname(g.typ((ts.info as ast.AliasInfo).parent))
-			g.typedefs.writeln('typedef struct $name ${cname(ts.gname)};')
-			g.types << idx
+			g.types << ts.name
 		}
 	}
-	return ts.gname + '*'.repeat(typ.nr_muls())
+}
+
+fn (mut g Gen) typ(typ ast.Type) string {
+	return g_context.get_type_gname(typ) + '*'.repeat(typ.nr_muls())
 }
 
 pub fn (mut g Gen) write(s string) {

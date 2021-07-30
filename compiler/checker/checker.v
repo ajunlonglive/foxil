@@ -99,8 +99,7 @@ fn (mut c Checker) expr(expr &ast.Expr) ast.Type {
 		}
 		ast.CharLiteral {
 			if !expr.typ.is_char() {
-				report.error('invalid character literal, expecting `<char|uchar> <VALUE>`',
-					expr.pos).emit()
+				report.error('invalid character literal, expecting `char <VALUE>`', expr.pos).emit()
 			}
 			return expr.typ
 		}
@@ -471,7 +470,7 @@ fn (mut c Checker) typ(typ ast.Type) ast.Type {
 	c.expecting_typ = true
 	t := c.expr(g_context.unresolved_types[typ.idx()]).derive(typ).clear_flag(.unresolved)
 	c.expecting_typ = false
-	mut ts := g_context.get_type_symbol(typ)
+	mut ts := g_context.get_type_symbol(t)
 	c.check_struct(mut ts)
 	return t
 }
@@ -499,7 +498,8 @@ fn (mut c Checker) are_compatible_types(got ast.Type, expected ast.Type) bool {
 	}
 	if (expected.is_rawptr() && got.is_number())
 		|| (expected.is_rawptr() && got.is_ptr())
-		|| (expected.is_ptr() && got.is_rawptr()) {
+		|| (expected.is_ptr() && got.is_rawptr())
+		|| (expected.is_number() && got.is_ptr()) {
 		return true
 	}
 	charptr_t := ast.char_type.to_ptr()
