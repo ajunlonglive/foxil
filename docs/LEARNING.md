@@ -56,11 +56,11 @@ Example:
 ```llvm
 @age = const i32 2021
 
-extern func @printf(char*, ...) i32
+extern func @printf(str, ...) i32
 
 func @main() void {
-    %msg = cast [17 x char] "Current age: %d\n" as char*
-    call i32 @printf(char* %msg, i32 @age)
+    %msg = cast [17 x char] "Current age: %d\n" as str
+    call i32 @printf(str %msg, i32 @age)
     ret void
 }
 ```
@@ -72,8 +72,8 @@ Anonymous structs are aggregated without names, which can have fields.
 Example:
 
 ```llvm
-func @make_account(char* %name, i32 %age) { char*, i32 } {
-    ret { char*, i32 } { char* %name, i32 %age }
+func @make_account(str %name, i32 %age) { str, i32 } {
+    ret { str, i32 } { str %name, i32 %age }
 }
 ```
 
@@ -87,10 +87,10 @@ alias.
 Using an alias for the above example things get better:
 
 ```llvm
-@Account = type { char*, i32 }
+@Account = type { str, i32 }
 
-func @make_account(char* %name, i32 %age) @Account {
-    ret @Account { char* %name, i32 %age }
+func @make_account(str %name, i32 %age) @Account {
+    ret @Account { str %name, i32 %age }
 }
 ```
 
