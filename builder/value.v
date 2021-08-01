@@ -3,7 +3,7 @@
 // file.
 module builder
 
-type Value = Constant | Ident | SingleLiteral | StructLiteral
+pub type Value = Constant | Ident | SingleLiteral | StructLiteral
 
 pub fn (v Value) str() string {
 	match v {

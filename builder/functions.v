@@ -86,6 +86,21 @@ pub fn (mut f Function) cmp(name string, cond string, v1 Value, v2 Value) {
 	f.body.writeln('    %$name = cmp $cond $v1, $v2')
 }
 
+[inline]
+pub fn (mut f Function) br(label string) {
+	f.body.writeln('    br $label')
+}
+
+[inline]
+pub fn (mut f Function) br2(cond Value, true_label string, false_label string) {
+	f.body.writeln('    br $cond, $true_label, $false_label')
+}
+
+[inline]
+pub fn (mut f Function) ret_void() {
+	f.body.writeln('    ret void')
+}
+
 pub fn (mut f Function) instr(name string, values []Value) {
 	f.body.writeln('    $name ')
 	for i, v in values {
@@ -95,9 +110,4 @@ pub fn (mut f Function) instr(name string, values []Value) {
 		}
 	}
 	f.body.writeln('')
-}
-
-[inline]
-pub fn (mut f Function) ret_void() {
-	f.body.writeln('    ret void')
 }
