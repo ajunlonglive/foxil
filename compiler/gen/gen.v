@@ -91,7 +91,8 @@ pub fn run_gen() {
 #define $gen.guard
 
 // ============= Foxil RUN-TIME :) ============
-#include <inttypes.h>
+#include <stdint.h>
+
 #define true  (1)
 #define false (0)
 #define NULL  (0)
@@ -126,7 +127,8 @@ pub fn run_gen() {
 			obj_file := '${fname}.o'
 			res := os.execute('$g_context.cc $g.opt -o $obj_file -c $c_file')
 			if res.exit_code != 0 {
-				compiler.foxil_error('an error occurred while creating the object code for `$sf.path`:\n$res.output')
+				compiler.foxil_gen_error('an error occurred while creating the object code for `$sf.path`:',
+					res.output)
 			}
 			g_context.objects << obj_file
 			g_context.files_to_delete << c_file
@@ -139,7 +141,8 @@ pub fn run_gen() {
 			user_list := g_context.user_objects.join(' ')
 			res := os.execute('$g_context.cc -o $g_context.output $list $user_list')
 			if res.exit_code != 0 {
-				compiler.foxil_error('an error occurred while creating the binary `$g_context.output`:\n$res.output')
+				compiler.foxil_gen_error('an error occurred while creating the binary `$g_context.output`:',
+					res.output)
 			}
 			g_context.files_to_delete << g_context.objects
 		}
