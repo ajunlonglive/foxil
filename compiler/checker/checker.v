@@ -402,7 +402,7 @@ fn (mut c Checker) instr_expr(mut instr ast.InstrExpr) ast.Type {
 								}
 							}
 							else {
-								report.error('expected an array, struct, string o pointer',
+								report.error('expected an array, struct, string or pointer',
 									instr.args[1].pos).emit()
 							}
 						}

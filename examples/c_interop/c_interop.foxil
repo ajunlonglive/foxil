@@ -5,25 +5,26 @@
 ; 2) ./bin/foxilc -o c_interop -l c_interop.o examples/c_interop.foxil
 ; 3) ./c_interop
 
-func @main() void {
+func @main() i32 {
     call void @c_interop()
-    ret void
+    ret i32 0
 }
 
 ; struct SimpleStruct {
 ;     int age;
 ; };
 ;
-; void SimpleStruct__show_age(struct SimpleStruct this) {
+; void SimpleStruct__show_age(struct SimpleStruct* this) {
 ;     printf("SimpleStruct.age: %d\n", this.age);
 ; }
 
 @SimpleStruct = type { i32 }
 
-extern func @SimpleStruct::show_age(@SimpleStruct) void
+extern func @SimpleStruct::show_age(@SimpleStruct*) void
 
 func @c_interop() void {
     %ss = alloca @SimpleStruct, @SimpleStruct { i32 2004 }
-    call void @SimpleStruct::show_age(@SimpleStruct %ss)
+    %ss.ptr = ref @SimpleStruct %ss
+    call void @SimpleStruct::show_age(@SimpleStruct* %ss.ptr)
     ret void
 }
