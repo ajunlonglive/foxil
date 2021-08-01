@@ -12,7 +12,8 @@ pub:
 	variadic bool
 	ret_type Type
 mut:
-	body strings.Builder
+	no_indent bool
+	body      strings.Builder
 }
 
 pub fn (mut b Builder) new_extern_func(name string, args []Type, variadic bool, ret_type Type) {
@@ -96,13 +97,34 @@ pub fn (mut f Function) br2(cond Value, true_label string, false_label string) {
 	f.body.writeln('    br $cond, $true_label, $false_label')
 }
 
+pub fn (mut f Function) call(func string, ret_type Type, args []Value) {
+	if !f.no_indent {
+		f.body.write_string('    ')
+	}
+	f.body.write_string('call $ret_type @${func}(')
+	for i, arg in args {
+		f.body.write_string(arg.str())
+		if i != args.len - 1 {
+			f.body.write_string(', ')
+		}
+	}
+	f.body.writeln(')')
+}
+
+pub fn (mut f Function) call2(name string, func string, ret_type Type, args []Value) {
+	f.body.write_string('    %$name = ')
+	f.no_indent = true
+	f.call(func, ret_type, args)
+	f.no_indent = false
+}
+
 [inline]
 pub fn (mut f Function) ret_void() {
 	f.body.writeln('    ret void')
 }
 
 pub fn (mut f Function) instr(name string, values []Value) {
-	f.body.writeln('    $name ')
+	f.body.write_string('    $name ')
 	for i, v in values {
 		f.body.write_string('$v')
 		if i != values.len - 1 {
