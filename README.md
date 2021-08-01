@@ -9,9 +9,6 @@ Fast and light
 Foxil is an intermediate language designed to facilitate compiler code generation. Foxil
 uses an easy to read LLVM-IR inspired syntax and generates C code.
 
-For now C code is generated, maybe in the future JavaScript code will be generated, and
-possibly also x86 assembly code.
-
 **NOTE:** Foxil is not designed to replace LLVM.
 
 ## Features

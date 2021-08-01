@@ -32,7 +32,7 @@ build: ## Build foxil binary
 
 format: ## Format foxil source code
 	echo "Formatting V files..."
-	$(VFMT) -w $(src_dir) cmd/ compiler/ examples/
+	$(VFMT) -w $(src_dir) cmd/ builder/ compiler/ examples/
 
 test: test-compiler test-checks ## Run all tests
 

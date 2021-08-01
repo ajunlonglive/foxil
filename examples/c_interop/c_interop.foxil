@@ -10,14 +10,6 @@ func @main() i32 {
     ret i32 0
 }
 
-; struct SimpleStruct {
-;     int age;
-; };
-;
-; void SimpleStruct__show_age(struct SimpleStruct* this) {
-;     printf("SimpleStruct.age: %d\n", this.age);
-; }
-
 @SimpleStruct = type { i32 }
 
 extern func @SimpleStruct::show_age(@SimpleStruct*) void
