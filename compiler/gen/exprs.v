@@ -184,9 +184,9 @@ fn (mut g Gen) instr_expr(instr ast.InstrExpr) {
 			if arg0 is ast.Symbol {
 				g.write('&$arg0.gname')
 			} else {
-				g.write('(&(${g.typ(instr.typ.deref())}[]){')
+				g.write('(&((${g.typ(instr.typ.deref())}[]){')
 				g.expr(arg0)
-				g.write('}[0])')
+				g.write('}[0]))')
 			}
 		}
 		'ret' {

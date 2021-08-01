@@ -177,14 +177,12 @@ pub fn foxil_warn(msg string) {
 	eprintln('foxilc: ' + term.yellow('warning: ') + msg)
 }
 
-[inline]
 pub fn foxil_error(msg string) {
 	eprintln('foxilc: ' + term.bold(term.red('error: ')) + msg)
 	eprintln('use `${os.args[0]} --help` to see usage')
 	exit(1)
 }
 
-[inline]
 pub fn foxil_gen_error(msg_ string, cerror string) {
 	msg := 'foxilc: ' + term.bold(term.red('error: ')) + msg_
 	l := '---------------------------------------------'
